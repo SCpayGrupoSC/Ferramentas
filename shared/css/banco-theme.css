@@ -1,0 +1,213 @@
+/* ==========================================================================
+   banco-theme.css
+   Tema visual global para as ferramentas do banco.
+   Importe este arquivo no <head> de cada index.html:
+   <link rel="stylesheet" href="../../shared/css/banco-theme.css">
+   ========================================================================== */
+
+:root {
+  /* Paleta principal */
+  --banco-primary: #0b2447;
+  --banco-primary-dark: #051530;
+  --banco-primary-light: #1a3d6d;
+  --banco-accent: #c9a227;
+  --banco-accent-dark: #a8850f;
+
+  /* Feedback */
+  --banco-success: #1e7e34;
+  --banco-danger: #b02a37;
+  --banco-warning: #a86b00;
+  --banco-info: #0f6674;
+
+  /* Neutros */
+  --banco-bg: #f4f6f9;
+  --banco-surface: #ffffff;
+  --banco-border: #d9dee5;
+  --banco-text: #1c2431;
+  --banco-text-muted: #5b6472;
+
+  /* Tipografia */
+  --banco-font: 'Segoe UI', Roboto, Arial, sans-serif;
+  --banco-font-mono: 'Consolas', 'Courier New', monospace;
+
+  /* Espaçamento e forma */
+  --banco-radius: 8px;
+  --banco-shadow: 0 2px 8px rgba(11, 36, 71, 0.08);
+  --banco-shadow-hover: 0 4px 14px rgba(11, 36, 71, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--banco-font);
+  background: var(--banco-bg);
+  color: var(--banco-text);
+  line-height: 1.5;
+}
+
+.banco-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.banco-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--banco-primary);
+  color: #fff;
+}
+
+.banco-header h1 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.banco-card {
+  background: var(--banco-surface);
+  border: 1px solid var(--banco-border);
+  border-radius: var(--banco-radius);
+  box-shadow: var(--banco-shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.banco-field {
+  margin-bottom: 16px;
+}
+
+.banco-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--banco-text-muted);
+  margin-bottom: 6px;
+}
+
+.banco-field input,
+.banco-field select,
+.banco-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--banco-font);
+  border: 1px solid var(--banco-border);
+  border-radius: var(--banco-radius);
+  background: var(--banco-surface);
+  color: var(--banco-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.banco-field input:focus,
+.banco-field select:focus,
+.banco-field textarea:focus {
+  outline: none;
+  border-color: var(--banco-primary-light);
+  box-shadow: 0 0 0 3px rgba(26, 61, 109, 0.15);
+}
+
+.banco-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--banco-radius);
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.banco-btn-primary {
+  background: var(--banco-primary);
+  color: #fff;
+}
+
+.banco-btn-primary:hover {
+  background: var(--banco-primary-light);
+  box-shadow: var(--banco-shadow-hover);
+}
+
+.banco-btn-accent {
+  background: var(--banco-accent);
+  color: var(--banco-primary-dark);
+}
+
+.banco-btn-accent:hover {
+  background: var(--banco-accent-dark);
+}
+
+.banco-btn-secondary {
+  background: transparent;
+  color: var(--banco-primary);
+  border: 1px solid var(--banco-border);
+}
+
+.banco-btn-secondary:hover {
+  background: var(--banco-bg);
+}
+
+.banco-result {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: var(--banco-radius);
+  background: #eef3f8;
+  border: 1px solid var(--banco-border);
+  font-size: 14px;
+}
+
+.banco-result.success {
+  background: #e9f6ec;
+  border-color: var(--banco-success);
+  color: var(--banco-success);
+}
+
+.banco-result.error {
+  background: #fbeaec;
+  border-color: var(--banco-danger);
+  color: var(--banco-danger);
+}
+
+.banco-alert {
+  padding: 12px 16px;
+  border-radius: var(--banco-radius);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.banco-alert-warning {
+  background: #fdf3e0;
+  color: var(--banco-warning);
+  border: 1px solid var(--banco-warning);
+}
+
+.banco-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--banco-text-muted);
+  padding: 24px 0;
+}
+
+/* Utilitário para mensagens de erro de validação inline */
+.banco-field .banco-error-msg {
+  display: none;
+  color: var(--banco-danger);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.banco-field.invalid input {
+  border-color: var(--banco-danger);
+}
+
+.banco-field.invalid .banco-error-msg {
+  display: block;
+}
