@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carteira Comercial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
 /*! SheetJS xlsx 0.18.5 -- vendored inline (github.com/SheetJS/sheetjs), originally loaded from cdnjs.cloudflare.com. Bundled so the tool has zero external runtime dependencies. */
 /*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
@@ -34,22 +34,39 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 </script>
 <style>
   :root{
-    --ink:#1B1E1B;
-    --ink-soft:#5B6058;
-    --paper:#FAF8F2;
-    --paper-dim:#F1EEE4;
-    --shell:#14171A;
-    --shell-soft:#22262A;
-    --line:#DEDACB;
-    --green:#0F8A5F;
-    --green-soft:#E4F2EA;
-    --green-strong:#0C6E4C;
-    --red:#C1432E;
-    --red-soft:#F7E7E3;
-    --red-strong:#9A3625;
-    --gold:#B8862E;
-    --gold-soft:#F3E9D4;
+    /* SCpay design tokens */
+    --ink-navy:#1C2445;
+    --slate:#2B2D3B;
+    --orange:#F07F3C;
+    --orange-light:#F29258;
+    --teal:#22C5AD;
+    --teal-light:#CCF1F5;
+    --logo-blue-light:#178FCF;
+    --logo-red:#B82724;
+    --bg-app:#F7F9FB;
+    --surface-card:#FFFFFF;
+    --text-muted:#61636E;
+    --text-muted-light:#8D91A2;
+    --border:#E2E3E8;
+
+    /* aliases mapped onto the previous token names used throughout this file */
+    --ink:var(--ink-navy);
+    --ink-soft:var(--text-muted);
+    --paper:var(--surface-card);
+    --paper-dim:var(--bg-app);
+    --shell:var(--ink-navy);
+    --shell-soft:rgba(255,255,255,.08);
+    --line:var(--border);
+    --green:var(--teal);
+    --green-soft:var(--teal-light);
+    --green-strong:var(--ink-navy);
+    --red:var(--logo-red);
+    --red-soft:rgba(184,39,36,.1);
+    --red-strong:var(--logo-red);
+    --gold:var(--orange);
+    --gold-soft:rgba(240,127,60,.15);
     --radius:10px;
+    --radius-card:16px;
 
     /* Type scale: fixed rem steps, ~1.1-1.2 ratio (product register: dense, not fluid) */
     --fs-2xs: 0.6875rem;  /* 11px  -- mono labels, table headers, meta */
@@ -70,7 +87,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   body{
     background:var(--paper-dim);
     color:var(--ink);
-    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-family:'Poppins',system-ui,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
   .mono{font-family:'IBM Plex Mono',monospace;}
@@ -88,36 +105,36 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .brand{display:flex;align-items:center;gap:10px;}
   .brand-mark{
     width:30px;height:30px;border-radius:6px;
-    background:linear-gradient(135deg,var(--green),#0a5c3f);
+    background:linear-gradient(135deg,var(--orange),var(--logo-red));
     display:flex;align-items:center;justify-content:center;
-    font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff;font-size:var(--fs-sm);
+    font-family:'Poppins',sans-serif;font-weight:700;color:#fff;font-size:11px;letter-spacing:.3px;
     flex-shrink:0;
   }
   .brand h1{font-size:var(--fs-lg);margin:0;font-weight:600;letter-spacing:.2px;}
-  .brand .tag{font-size:var(--fs-2xs);color:#9BA39B;margin-top:1px;font-family:'IBM Plex Mono',monospace;letter-spacing:.3px;}
-  .sync-info{font-size:var(--fs-2xs);color:#9BA39B;font-family:'IBM Plex Mono',monospace;text-align:right;}
-  .sync-info b{color:#D8E8DE;}
+  .brand .tag{font-size:var(--fs-2xs);color:rgba(255,255,255,.6);margin-top:1px;font-family:'IBM Plex Mono',monospace;letter-spacing:.3px;}
+  .sync-info{font-size:var(--fs-2xs);color:rgba(255,255,255,.6);font-family:'IBM Plex Mono',monospace;text-align:right;}
+  .sync-info b{color:#fff;}
 
   .controls-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;}
   .push-end{margin-left:auto;}
   @media(max-width:560px){ .push-end{margin-left:0;width:100%;justify-content:center;} }
-  .period-box{display:flex;align-items:center;gap:8px;background:var(--shell-soft);border:1px solid #33383D;border-radius:8px;padding:6px 10px;}
-  .period-box label{font-size:var(--fs-2xs);color:#9BA39B;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.4px;}
+  .period-box{display:flex;align-items:center;gap:8px;background:var(--shell-soft);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 10px;}
+  .period-box label{font-size:var(--fs-2xs);color:rgba(255,255,255,.6);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.4px;}
   .period-box input[type=date]{
-    background:transparent;border:none;color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:var(--fs-xs);
+    background:transparent;border:none;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:var(--fs-xs);
   }
   .period-box input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
-  .period-sep{color:#5B6058;font-size:var(--fs-xs);}
+  .period-sep{color:rgba(255,255,255,.4);font-size:var(--fs-xs);}
 
   .btn{
-    font-family:'IBM Plex Sans',sans-serif;font-size:var(--fs-xs);font-weight:600;
+    font-family:'Poppins',sans-serif;font-size:var(--fs-xs);font-weight:600;
     border-radius:8px;padding:9px 14px;border:1px solid transparent;cursor:pointer;
     display:inline-flex;align-items:center;gap:6px;transition:opacity .15s var(--ease-out), transform .1s var(--ease-out);
   }
   .btn:active{transform:scale(.98);}
-  .btn-upload{background:var(--green);color:#fff;}
+  .btn-upload{background:var(--orange);color:#fff;}
   .btn-upload:hover{opacity:.9;}
-  .btn-ghost{background:transparent;color:var(--paper);border-color:#3A3F44;}
+  .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.25);}
   .btn-ghost:hover{background:var(--shell-soft);}
   .btn-primary{background:var(--ink);color:#fff;}
   .btn-primary:hover{opacity:.88;}
@@ -131,7 +148,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .btn-danger-text:focus-visible, select.move-select:focus-visible{
     outline:2px solid var(--ink);outline-offset:2px;
   }
-  .btn-ghost:focus-visible{outline-color:var(--paper);}
+  .btn-ghost:focus-visible{outline-color:#fff;}
 
   /* ---- Tabs ---- */
   .tabs-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:18px;}
@@ -142,14 +159,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     font:inherit;text-align:left;appearance:none;-webkit-appearance:none;
     transition:background-color .15s var(--ease-out), border-color .15s var(--ease-out);
   }
-  .tab-pill.active{border-color:var(--ink);background:var(--ink);}
+  .tab-pill.active{border-color:var(--orange);background:var(--orange);}
   .tab-pill .t-name{font-size:var(--fs-xs);font-weight:600;color:var(--ink);display:flex;align-items:center;gap:5px;}
   .tab-pill.active .t-name{color:#fff;}
   .tab-pill .t-meta{font-size:var(--fs-2xs);font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);}
-  .tab-pill.active .t-meta{color:#C9CFC9;}
-  .tab-badge{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+  .tab-pill.active .t-meta{color:rgba(255,255,255,.8);}
+  .tab-badge{width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;}
   .tab-add{
-    padding:9px 14px;border-radius:9px;border:1px dashed #B9B4A2;background:transparent;
+    padding:9px 14px;border-radius:9px;border:1px dashed var(--border);background:transparent;
     color:var(--ink-soft);font-size:var(--fs-xs);cursor:pointer;font-weight:500;
     transition:border-color .15s var(--ease-out), color .15s var(--ease-out);
   }
@@ -157,7 +174,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   /* ---- Receipt summary card ---- */
   .receipt{
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:0 2px 8px rgba(0,0,0,.06);
     padding:20px 22px 16px;margin-bottom:20px;
     position:relative;
     box-shadow:0 1px 0 rgba(0,0,0,.02);
@@ -184,7 +201,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .toolbar .count{font-family:'IBM Plex Mono',monospace;font-size:var(--fs-2xs);color:var(--ink-soft);}
 
   .add-panel{
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-card);
     padding:16px 18px;margin-bottom:16px;display:none;
   }
   .add-panel.open{display:block;}
@@ -193,18 +210,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .field label{display:block;font-size:var(--fs-2xs);text-transform:uppercase;letter-spacing:.4px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;}
   .field input{
     width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;
-    font-family:'IBM Plex Sans',sans-serif;font-size:var(--fs-xs);background:var(--paper-dim);color:var(--ink);
+    font-family:'Poppins',sans-serif;font-size:var(--fs-xs);background:var(--paper-dim);color:var(--ink);
   }
   .field input:focus{outline:2px solid var(--ink);outline-offset:-1px;background:#fff;}
   .add-hint{font-size:var(--fs-2xs);color:var(--ink-soft);margin-top:8px;}
 
   /* ---- Table ---- */
-  .table-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .table-wrap{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
   table{width:100%;border-collapse:collapse;}
   thead th{
     text-align:left;font-size:var(--fs-2xs);text-transform:uppercase;letter-spacing:.4px;
-    color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-weight:500;
-    padding:11px 14px;border-bottom:1px solid var(--line);background:var(--paper-dim);
+    color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:500;
+    padding:11px 14px;border-bottom:1px solid var(--slate);background:var(--slate);
   }
   tbody td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:var(--fs-xs);vertical-align:middle;}
   tbody tr:last-child td{border-bottom:none;}
@@ -221,11 +238,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   .date-input:focus{outline:2px solid var(--ink);outline-offset:-1px;background:#fff;}
   .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:var(--fs-2xs);font-weight:600;font-family:'IBM Plex Mono',monospace;}
-  .badge.on{background:var(--green-soft);color:var(--green-strong);}
-  .badge.off{background:var(--red-soft);color:var(--red-strong);}
+  .badge.on{background:var(--teal);color:#fff;}
+  .badge.off{background:var(--red-soft);color:var(--logo-red);}
   .row-actions{display:flex;gap:6px;align-items:center;justify-content:flex-end;}
   select.move-select{
-    font-family:'IBM Plex Sans',sans-serif;font-size:var(--fs-2xs);border:1px solid var(--line);border-radius:6px;
+    font-family:'Poppins',sans-serif;font-size:var(--fs-2xs);border:1px solid var(--line);border-radius:6px;
     padding:5px 6px;background:#fff;color:var(--ink-soft);max-width:120px;
   }
   .empty-state{padding:48px 20px;text-align:center;color:var(--ink-soft);}
@@ -259,7 +276,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     transition:opacity .2s var(--ease-out), visibility 0s linear 0s;
   }
   .modal{
-    background:#fff;border-radius:12px;padding:22px;max-width:340px;width:100%;
+    background:var(--surface-card);border-radius:var(--radius-card);padding:22px;max-width:340px;width:100%;
     transform:scale(.96) translateY(8px);transition:transform .2s var(--ease-out);
   }
   .modal-overlay.show .modal{transform:scale(1) translateY(0);}
@@ -288,10 +305,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="topbar-inner">
       <div class="brand-row">
         <div class="brand">
-          <div class="brand-mark">$</div>
+          <div class="brand-mark">SC</div>
           <div>
             <h1>Carteira Comercial</h1>
-            <div class="tag">GESTÃO DE CLIENTES · DOCK</div>
+            <div class="tag">SCPAY · GESTÃO DE CLIENTES · DOCK</div>
           </div>
         </div>
         <div class="sync-info" id="syncInfo">Nenhuma base de vendas carregada ainda</div>
