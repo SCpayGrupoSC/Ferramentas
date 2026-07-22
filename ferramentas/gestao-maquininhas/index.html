@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão de Maquininhas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+  :root{
+    /* ---- BancoSC / SCconecta design tokens ---- */
+    --bg: #F7F9FB;
+    --surface: #FFFFFF;
+    --border: #E2E3E8;
+    --navy: #1C2445;        /* ink-navy: headings, texto forte */
+    --navy-2: #2B2D3B;      /* slate: header de tabela, superfícies escuras */
+    --orange: #F0803D;      /* ação primária, nav ativa */
+    --orange-light: #F29258;
+    --orange-dark: #D96C2E;
+    --teal: #22C5AD;        /* ação de criar/confirmar, sucesso */
+    --teal-light: #CCF1F5;
+    --teal-dark: #1CA792;
+    --logo-red: #B82824;
+    --logo-cyan: #008ECF;
+    --accent: #22C5AD;
+    --accent-soft: #CCF1F5;
+    --accent-soft-2: #B7E8E0;
+    --danger: #B33B2F;
+    --danger-soft: #F7E4E1;
+    --warn: #9A6B1E;
+    --warn-soft: #F7EEDD;
+    --muted: #61636E;
+    --muted-light: #8D91A2;
+    --header-text-soft: #AEB4D1;
+    --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  .app{
+    background:var(--bg);
+    color:var(--navy);
+    font-family:var(--font-body);
+    min-height:100%;
+    padding:0 0 48px 0;
+  }
+  .header{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    padding:28px 32px 24px 32px;
+    border-radius:0 0 20px 20px;
+    margin-bottom:24px;
+  }
+  .header-inner{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .header h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:26px;
+    margin:0 0 4px 0;
+    letter-spacing:0.1px;
+  }
+  .header p{
+    margin:0;
+    color:var(--header-text-soft);
+    font-size:13.5px;
+  }
+  .stat-row{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+  }
+  .stat{text-align:right;}
+  .stat-value{
+    font-family:var(--font-mono);
+    font-size:20px;
+    font-variant-numeric:tabular-nums;
+    font-weight:700;
+  }
+  .stat-label{
+    font-size:11px;
+    color:var(--header-text-soft);
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+  }
+  .container{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px 24px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card h2{
+    font-family:var(--font-display);
+    font-size:18px;
+    margin:0 0 4px 0;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .card .card-sub{
+    font-size:12.5px;
+    color:var(--muted);
+    margin:0 0 16px 0;
+  }
+  .form-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr 0.9fr 0.9fr;
+    gap:14px;
+  }
+  .field{display:flex; flex-direction:column; gap:5px;}
+  .field.span-2{grid-column:span 2;}
+  .field.span-4{grid-column:1/-1;}
+  label{
+    font-size:0.75rem;
+    font-weight:600;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  input[type=text], input[type=date], input[type=file], textarea, select{
+    font-family:var(--font-body);
+    font-size:14.5px;
+    padding:9px 11px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#FFFFFF;
+    color:var(--navy);
+    width:100%;
+  }
+  input:focus, select:focus, textarea:focus, button:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
+    border-color:var(--teal);
+  }
+  textarea{resize:vertical; min-height:38px; font-size:14px;}
+  .terminals-block{margin-top:18px; border-top:1px dashed var(--border); padding-top:16px;}
+  .terminals-block > label{margin-bottom:10px; display:block;}
+  .terminal-row{
+    display:grid;
+    grid-template-columns:1.4fr 0.8fr 0.9fr auto;
+    gap:12px;
+    align-items:end;
+    margin-bottom:10px;
+  }
+  .subtotal-display{
+    font-family:var(--font-mono);
+    font-variant-numeric:tabular-nums;
+    background:var(--accent-soft);
+    color:var(--teal-dark);
+    border-radius:10px;
+    padding:9px 11px;
+    font-size:14.5px;
+    font-weight:600;
+    text-align:right;
+  }
+  .icon-btn{
+    background:none; border:1px solid var(--border); color:var(--danger);
+    border-radius:10px; width:38px; height:38px; cursor:pointer; font-size:16px; line-height:1;
+  }
+  .icon-btn:hover{background:var(--danger-soft);}
+  .add-terminal-btn{
+    background:none; border:1px dashed var(--teal); color:var(--teal-dark);
+    border-radius:10px; padding:8px 14px; font-size:13.5px; font-weight:600; cursor:pointer; margin-top:2px;
+  }
+  .add-terminal-btn:hover{background:var(--accent-soft);}
+  .bloqueio-block{
+    margin-top:18px; border-top:1px dashed var(--border); padding-top:16px;
+  }
+  .bloqueio-toggle{
+    display:flex; align-items:center; gap:9px; margin-bottom:12px; cursor:pointer;
+  }
+  .bloqueio-toggle input{width:auto;}
+  .bloqueio-fields{
+    display:grid; grid-template-columns:1fr 1fr 2fr; gap:14px;
+  }
+  .form-actions{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:20px; padding-top:16px; border-top:1px solid var(--border); flex-wrap:wrap; gap:12px;
+  }
+  .total-preview{font-size:14px; color:var(--muted);}
+  .total-preview strong{
+    font-family:var(--font-mono); font-variant-numeric:tabular-nums; color:var(--navy); font-size:16px;
+  }
+  .btn-primary{
+    background:var(--orange); color:#fff; border:none; border-radius:10px;
+    padding:11px 22px; font-size:14.5px; font-weight:600; cursor:pointer;
+  }
+  .btn-primary:hover{background:var(--orange-dark);}
+  .btn-secondary{
+    background:none; border:1px solid var(--navy); color:var(--navy);
+    border-radius:10px; padding:11px 18px; font-size:14px; font-weight:600; cursor:pointer; margin-right:10px;
+  }
+  .btn-secondary:hover{background:var(--bg);}
+  .btn-navy{
+    background:var(--teal); color:#fff; border:none; border-radius:10px;
+    padding:10px 16px; font-size:13.5px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .btn-navy:hover{background:var(--teal-dark);}
+  .toolbar{
+    display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap;
+  }
+  .search-input{max-width:280px;}
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.05em;
+    color:#fff; font-weight:600; padding:9px 10px; background:var(--navy-2);
+  }
+  tbody td{padding:12px 10px; border-bottom:1px solid var(--border); vertical-align:top;}
+  tbody tr:hover{background:#F8F9FB;}
+  tbody tr.incompleto{background:var(--warn-soft);}
+  .razao{font-weight:600;}
+  .cnpj{font-family:var(--font-mono); color:var(--muted); font-size:12.5px;}
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; background:var(--accent-soft); color:var(--teal-dark);
+    border-radius:999px; padding:3px 10px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; font-family:var(--font-mono);
+  }
+  .chip .qty{color:var(--navy); background:#fff; border-radius:10px; padding:0 6px; font-size:11px;}
+  .status-badge{
+    display:inline-block; border-radius:999px; padding:4px 11px; font-size:12px; font-weight:700; white-space:nowrap;
+  }
+  .status-isento{background:var(--teal); color:#fff;}
+  .status-cobrar{background:var(--danger-soft); color:var(--danger);}
+  .status-bloqueio{background:#E7E9F2; color:var(--navy-2);}
+  .status-incompleto{background:var(--warn-soft); color:var(--warn);}
+  .inatividade-tag{
+    display:inline-block; margin-top:5px; font-size:11px; color:var(--warn); font-weight:600;
+  }
+  .valor-cell{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:700; white-space:nowrap;}
+  .volume-cell{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--muted);}
+  .obs-cell{color:var(--muted); font-size:12.5px; max-width:150px;}
+  .row-actions{display:flex; gap:6px; flex-wrap:wrap;}
+  .row-actions button{
+    background:none; border:1px solid var(--border); border-radius:10px; padding:5px 9px; font-size:12px; cursor:pointer; color:var(--navy);
+  }
+  .row-actions button:hover{background:var(--bg);}
+  .row-actions .del{color:var(--danger);}
+  .row-actions .del:hover{background:var(--danger-soft);}
+  .empty-state{text-align:center; padding:40px 20px; color:var(--muted);}
+  .empty-state .big{font-family:var(--font-display); font-weight:700; font-size:17px; color:var(--navy); margin-bottom:6px;}
+  .status-msg{font-size:12.5px; color:var(--teal-dark); margin-top:8px; min-height:16px;}
+  .import-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+  .import-row input[type=file]{flex:1; min-width:220px;}
+  .import-summary{
+    margin-top:16px; padding:14px 16px; border-radius:10px; background:var(--accent-soft);
+    font-size:13.5px; color:var(--navy);
+  }
+  .import-summary.err{background:var(--danger-soft); color:var(--danger);}
+  .import-summary ul{margin:8px 0 0 18px; padding:0;}
+  .filter-chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .filter-chip{
+    border:1px solid var(--border); background:#fff; color:var(--navy); border-radius:999px;
+    padding:6px 13px; font-size:12.5px; font-weight:600; cursor:pointer;
+  }
+  .filter-chip.active{background:var(--orange); color:#fff; border-color:var(--orange);}
+  .assumption-note{
+    font-size:12px; color:var(--muted); background:#F8F9FB; border:1px dashed var(--border);
+    border-radius:10px; padding:10px 12px; margin-top:14px;
+  }
+  @media (max-width:640px){
+    .form-grid{grid-template-columns:1fr 1fr;}
+    .terminal-row, .bloqueio-fields{grid-template-columns:1fr;}
+    .header-inner{flex-direction:column; align-items:flex-start;}
+    .stat-row{gap:16px;}
+  }
+
+  /* ---- logo ---- */
+  .brand-logo{height:30px; width:auto; display:block; margin-bottom:10px;}
+
+  /* ---- marca badge ---- */
+  .marca-badge{
+    display:inline-block; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:700;
+    letter-spacing:0.3px; margin-left:6px; vertical-align:middle;
+  }
+  .marca-oncoprod{background:#EAE3F5; color:#5B3A9B;}
+  .marca-farma{background:#DDEFF7; color:#1B6E93;}
+  .marca-none{background:var(--border); color:var(--muted);}
+  select#f-marca{width:100%;}
+
+  /* ---- profile modal ---- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(28,36,69,0.55); z-index:100;
+    display:none; align-items:flex-start; justify-content:center; padding:32px 16px; overflow-y:auto;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    background:var(--surface); border-radius:16px; max-width:760px; width:100%;
+    padding:0; box-shadow:0 20px 60px rgba(28,36,69,0.25); margin-bottom:32px;
+  }
+  /* O perfil do cliente tem mais conteúdo (tabela de maquininhas, histórico, etc), então
+     ganha um max-width maior para caber confortavelmente em uma tela padrão sem cortar. */
+  #profile-modal-card{max-width:1080px;}
+  /* Wrapper com scroll horizontal para tabelas largas (maquininhas, histórico) — evita que
+     o modal seja empurrado para fora da tela quando a tabela tem muitas colunas. */
+  .table-scroll{overflow-x:auto; margin:0 -2px;}
+  .table-scroll::-webkit-scrollbar{height:8px;}
+  .table-scroll::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+  .table-scroll::-webkit-scrollbar-thumb:hover{background:var(--muted);}
+  .maq-table{min-width:1000px;} /* garante scroll horizontal em vez de esmagar colunas */
+  .maq-table th, .maq-table td{white-space:nowrap; padding:6px 8px;}
+  .maq-table .inline-edit-input{min-width:0; width:100%; padding:4px 6px; font-size:12px;}
+  .maq-table input[data-maq-action="editar-entrega"],
+  .maq-table input[data-maq-action="editar-retirada"]{width:130px;}
+  .maq-table input[data-maq-action="editar-rastreio"],
+  .maq-table input[data-maq-action="editar-serie"]{width:110px;}
+  .maq-table input[data-maq-action^="editar-os-"]{width:130px;}
+  .maq-table td .row-actions{display:flex; flex-direction:column; gap:4px;}
+  .maq-table td .row-actions button{white-space:nowrap; font-size:11px; padding:4px 8px;}
+  .modal-head{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%); color:#fff;
+    border-radius:16px 16px 0 0; padding:22px 26px 20px 26px;
+  }
+  .modal-head-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px;}
+  .modal-close{
+    background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:10px;
+    width:32px; height:32px; cursor:pointer; font-size:16px; flex-shrink:0;
+  }
+  .modal-close:hover{background:rgba(255,255,255,0.22);}
+  .modal-title{font-family:var(--font-display); font-size:20px; font-weight:700; margin:0 0 4px 0;}
+  .modal-sub{font-family:var(--font-mono); font-size:12.5px; color:var(--header-text-soft);}
+  .profile-volumes{display:flex; gap:28px; margin-top:16px; flex-wrap:wrap;}
+  .profile-vol-value{
+    font-family:var(--font-mono); font-size:24px; font-weight:700; font-variant-numeric:tabular-nums;
+  }
+  .profile-vol-label{font-size:11px; color:var(--header-text-soft); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
+  .modal-body{padding:22px 26px 26px 26px;}
+  .profile-section{margin-bottom:22px;}
+  .profile-section:last-child{margin-bottom:0;}
+  .profile-section-title{
+    font-family:var(--font-display); font-size:14.5px; font-weight:700; color:var(--navy);
+    margin:0 0 10px 0; padding-bottom:6px; border-bottom:1px solid var(--border);
+  }
+  .profile-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:12px 20px;}
+  .profile-kv-label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;}
+  .profile-kv-value{font-size:14px; color:var(--navy); font-weight:600;}
+  .hist-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .hist-table th{text-align:left; color:var(--muted); font-weight:600; padding:4px 8px; font-size:10.5px; text-transform:uppercase;}
+  .hist-table td{padding:4px 8px; font-family:var(--font-mono); font-variant-numeric:tabular-nums; border-bottom:1px solid var(--border);}
+
+  /* ---- OS / defeito flow ---- */
+  .os-card{
+    border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:10px; background:#F8F9FB;
+  }
+  .os-card-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .os-num{font-family:var(--font-mono); font-weight:700; color:var(--navy);}
+  .os-status{
+    display:inline-block; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700;
+  }
+  .os-status-aberta{background:var(--warn-soft); color:var(--warn);}
+  .os-status-entrega_confirmada{background:#E7E9F2; color:var(--navy-2);}
+  .os-status-retirada_aberta{background:#E7E9F2; color:var(--navy-2);}
+  .os-status-finalizada{background:var(--accent-soft); color:var(--teal-dark);}
+  .os-meta{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.6;}
+  .os-actions{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
+  .os-actions button{
+    background:var(--teal); color:#fff; border:none; border-radius:10px; padding:6px 11px; font-size:12px; cursor:pointer; font-weight:600;
+  }
+  .os-actions button:hover{background:var(--teal-dark);}
+  .os-form{
+    display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px; align-items:end; margin-top:6px;
+  }
+  .os-form .field{margin-bottom:0;}
+  .no-os{color:var(--muted); font-size:13px;}
+  .btn-details{
+    background:none; border:1px solid var(--border); color:var(--navy); border-radius:10px;
+    padding:6px 12px; font-size:12.5px; cursor:pointer; margin-top:10px;
+  }
+  .btn-details:hover{background:var(--bg);}
+  .import-details{margin-top:10px; font-size:12.5px;}
+  .import-details table{width:100%; border-collapse:collapse; margin-top:6px;}
+  .import-details th, .import-details td{text-align:left; padding:5px 8px; border-bottom:1px solid var(--border); font-size:12px;}
+
+  /* ---- cartões colapsáveis (importação) ---- */
+  .card-head-toggle{
+    display:flex; justify-content:space-between; align-items:center; gap:10px; cursor:pointer; user-select:none;
+  }
+  .card-head-toggle h2{margin:0;}
+  .card-toggle-arrow{
+    flex-shrink:0; width:28px; height:28px; border-radius:8px; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--navy);
+    transition:transform 0.15s ease; background:#fff;
+  }
+  .card-toggle-arrow.open{transform:rotate(90deg);}
+  .collapsible-body{display:none; margin-top:16px;}
+  .collapsible-body.open{display:block;}
+
+  /* ---- badge "cadastro incompleto" (independente do status de mensalidade) ---- */
+  .incompleto-tag{
+    display:inline-block; margin-left:6px; border-radius:999px; padding:2px 9px; font-size:10.5px;
+    font-weight:700; background:var(--warn-soft); color:var(--warn); vertical-align:middle;
+  }
+
+  /* ---- campos editáveis inline (perfil) ---- */
+  .inline-edit-input{
+    width:100%; border:1px solid var(--border); border-radius:8px; padding:6px 8px; font-size:13px;
+    font-family:var(--font-body); color:var(--navy); background:#fff;
+  }
+  .inline-edit-input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .maq-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .maq-table input.inline-edit-input{padding:4px 6px; font-size:12px;}
+
+  /* ---- modal de exportação ---- */
+  .export-option{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid var(--border);
+    border-radius:10px; margin-bottom:8px; cursor:pointer;
+  }
+  .export-option:hover{background:var(--bg);}
+  .export-option input{margin-top:2px;}
+  .export-option-label{font-weight:600; font-size:13.5px; color:var(--navy);}
+  .export-option-sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-inner">
+      <div>
+        <img class="brand-logo" alt="SCpay" src="data:image/png;base64,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">
+        <h1>Gestão de Mensalidades — Maquininhas POS</h1>
+        <p>Cadastro de clientes, importação de transações e régua de cobrança (versão offline)</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-value" id="stat-clientes">0</div><div class="stat-label">Clientes</div></div>
+        <div class="stat"><div class="stat-value" id="stat-cobrar">0</div><div class="stat-label">Fila de cobrança</div></div>
+        <div class="stat"><div class="stat-value" id="stat-total">R$ 0,00</div><div class="stat-label">Total a cobrar no mês</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+      <div class="card-head-toggle" data-collapse-toggle="body-import-transacoes">
+        <h2>Importar transações</h2>
+        <div class="card-toggle-arrow" id="arrow-import-transacoes">▸</div>
+      </div>
+      <div class="collapsible-body" id="body-import-transacoes">
+        <p class="card-sub">Envie o arquivo exportado da Dock (.xlsx ou .csv) — pode ser o relatório de um mês ou o histórico completo desde o início: o sistema não duplica transações já importadas. O sistema soma o valor transacionado aprovado por CNPJ, identifica a marca (Oncoprod/Farma), atualiza os clientes já cadastrados e cria automaticamente os clientes novos que aparecerem no arquivo — já com a data de entrega do arquivo preenchida, faltando só a data de retirada.</p>
+        <div class="import-row">
+          <input type="file" id="file-import" accept=".xlsx,.xls,.csv">
+          <button class="btn-primary" id="btn-import" type="button">Importar arquivo</button>
+        </div>
+        <div id="import-summary"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head-toggle" data-collapse-toggle="body-import-tefti">
+        <h2>Importar Ordens de Serviço (TEFTI)</h2>
+        <div class="card-toggle-arrow" id="arrow-import-tefti">▸</div>
+      </div>
+      <div class="collapsible-body" id="body-import-tefti">
+        <p class="card-sub">Envie o relatório de Ordem de Serviço exportado da TEFTI (.xlsx ou .csv). O sistema lê OS de instalação, desinstalação, manutenção e troca de tecnologia por CNPJ, atualiza a lista de maquininhas de cada cliente (modelo, data de entrega, retirada, rastreio) e guarda todo o histórico de OS. Clientes novos que aparecerem no arquivo são criados automaticamente. OS de Manutenção e Envio de Bobinas entram só no histórico e não alteram a lista de maquininhas.</p>
+        <div class="import-row">
+          <input type="file" id="file-import-tefti" accept=".xlsx,.xls,.csv">
+          <button class="btn-primary" id="btn-import-tefti" type="button">Importar OS da TEFTI</button>
+        </div>
+        <div id="import-summary-tefti"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head-toggle" data-collapse-toggle="body-import-estabelecimento">
+        <h2>Importar Estabelecimento</h2>
+        <div class="card-toggle-arrow" id="arrow-import-estabelecimento">▸</div>
+      </div>
+      <div class="collapsible-body" id="body-import-estabelecimento">
+        <p class="card-sub">Envie o arquivo de cadastro de estabelecimentos (.xlsx ou .csv), com colunas como Razão Social, CNPJ-CPF, E-mail, Telefone, Cidade, Estado e Tabela de Preços. O sistema atualiza esses dados no perfil de cada cliente pelo CNPJ. Se o CNPJ ainda não existir na base, um cadastro novo é criado (sinalizado como incompleto) para depois ser completado com maquininhas e transações.</p>
+        <div class="import-row">
+          <input type="file" id="file-import-estabelecimento" accept=".xlsx,.xls,.csv">
+          <button class="btn-primary" id="btn-import-estabelecimento" type="button">Importar Estabelecimento</button>
+        </div>
+        <div id="import-summary-estabelecimento"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head-toggle" data-collapse-toggle="body-config-modelos">
+        <h2>Configuração de modelos de terminal</h2>
+        <div class="card-toggle-arrow" id="arrow-config-modelos">▸</div>
+      </div>
+      <div class="collapsible-body" id="body-config-modelos">
+        <p class="card-sub">Valores padrão de mensalidade e mínimo mensal para isenção, por modelo. Servem de base para o cálculo de cobrança de todos os clientes — para negociar um valor diferente com um cliente específico, use o campo "Valor de mensalidade" na seção Maquininhas do Perfil dele.</p>
+        <div id="modelos-config-rows"></div>
+        <button class="btn-navy" id="btn-save-modelos" type="button">Salvar configuração de modelos</button>
+        <div id="modelos-config-status" style="margin-top:10px; font-size:13px; color:var(--muted);"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="form-title">Adicionar cliente</h2>
+      <p class="card-sub">Estes campos só mudam quando entra cliente novo ou há alteração pontual (modelo, quantidade, datas, isenção). O valor transacionado e o status de cobrança vêm da importação e são calculados automaticamente.</p>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="f-razao">Razão Social</label>
+          <input type="text" id="f-razao" placeholder="Ex: Farmacia Andrino Ltda">
+        </div>
+        <div class="field">
+          <label for="f-cnpj">CNPJ</label>
+          <input type="text" id="f-cnpj" placeholder="00000000000000">
+        </div>
+        <div class="field">
+          <label for="f-marca">Marca</label>
+          <select id="f-marca">
+            <option value="">— não definida —</option>
+            <option value="Oncoprod">Oncoprod</option>
+            <option value="Farma">Farma</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-entrega">Data de Entrega</label>
+          <input type="date" id="f-entrega">
+        </div>
+        <div class="field">
+          <label for="f-retirada">Data de Retirada</label>
+          <input type="date" id="f-retirada">
+        </div>
+        <div class="field span-2">
+          <label for="f-obs">Observações</label>
+          <input type="text" id="f-obs" placeholder="Opcional">
+        </div>
+      </div>
+
+      <div class="terminals-block">
+        <label>Terminais deste cliente</label>
+        <div class="assumption-note" id="terminals-note" style="display:none; margin-bottom:12px;">
+          Este cliente já tem maquininhas individuais cadastradas (por importação da TEFTI ou edição manual). Este bloco aqui serve só de referência — para adicionar, remover ou editar uma maquininha específica (data de entrega, retirada, rastreio), use a seção "Maquininhas" no <strong>Perfil</strong> do cliente.
+        </div>
+        <div id="terminal-rows"></div>
+        <button class="add-terminal-btn" id="btn-add-terminal" type="button">+ Adicionar modelo de terminal</button>
+      </div>
+
+      <div class="bloqueio-block">
+        <label class="bloqueio-toggle">
+          <input type="checkbox" id="f-bloqueio-ativo">
+          <span>Aplicar isenção manual temporária (bloqueio de cobrança / cortesia)</span>
+        </label>
+        <div class="bloqueio-fields" id="bloqueio-fields" style="display:none;">
+          <div class="field">
+            <label for="f-bloqueio-inicio">Início do bloqueio</label>
+            <input type="date" id="f-bloqueio-inicio">
+          </div>
+          <div class="field">
+            <label for="f-bloqueio-fim">Fim do bloqueio</label>
+            <input type="date" id="f-bloqueio-fim">
+          </div>
+          <div class="field">
+            <label for="f-bloqueio-justificativa">Justificativa (obrigatória)</label>
+            <input type="text" id="f-bloqueio-justificativa" placeholder="Ex: cortesia 3 meses combinada com o cliente">
+          </div>
+        </div>
+      </div>
+
+      <div class="bloqueio-block">
+        <label style="display:block; margin-bottom:10px;">Negociação de isenção</label>
+        <div class="bloqueio-fields" id="negociacao-fields">
+          <div class="field">
+            <label for="f-neg-tipo">Tipo</label>
+            <select id="f-neg-tipo">
+              <option value="padrao">Padrão (1ª maquininha isenta, demais cobram)</option>
+              <option value="personalizada">Personalizada (negociação específica)</option>
+            </select>
+          </div>
+          <div class="field" id="f-neg-minimo-wrap" style="display:none;">
+            <label for="f-neg-minimo">Mínimo negociado p/ isentar demais (R$/mês)</label>
+            <input type="text" inputmode="numeric" id="f-neg-minimo" placeholder="Ex: 800000">
+          </div>
+          <div class="field" id="f-neg-obs-wrap" style="display:none;">
+            <label for="f-neg-obs">Observação da negociação</label>
+            <input type="text" id="f-neg-obs" placeholder="Ex: 6 máquinas sempre cobram, demais isentam com 800k/mês">
+          </div>
+        </div>
+        <div class="assumption-note" id="negociacao-hint" style="display:none; margin-top:12px;">
+          Marque quais maquininhas ficam sempre cobrando na aba <strong>Perfil</strong> do cliente, na seção "Maquininhas".
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <div class="total-preview">Mensalidade cheia (se cobrada): <strong id="preview-total">R$ 0,00</strong></div>
+        <div>
+          <button class="btn-secondary" id="btn-cancel-edit" type="button" style="display:none;">Cancelar edição</button>
+          <button class="btn-primary" id="btn-save" type="button">Salvar cliente</button>
+        </div>
+      </div>
+      <div class="status-msg" id="status-msg"></div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <input type="text" class="search-input" id="search" placeholder="Buscar por razão social ou CNPJ">
+        <div class="filter-chips" id="filter-chips">
+          <button class="filter-chip active" data-filter="todos" type="button">Todos</button>
+          <button class="filter-chip" data-filter="cobrar" type="button">Fila de cobrança</button>
+          <button class="filter-chip" data-filter="isento" type="button">Isentos</button>
+          <button class="filter-chip" data-filter="incompleto" type="button">Cadastro incompleto</button>
+          <button class="filter-chip" data-filter="sem-maquininha" type="button">Sem maquininha ativa</button>
+          <button class="filter-chip" data-filter="inativo" type="button">Inatividade (3+ meses)</button>
+          <button class="filter-chip" data-filter="marca-oncoprod" type="button">Marca: Oncoprod</button>
+          <button class="filter-chip" data-filter="marca-farma" type="button">Marca: Farma</button>
+          <button class="filter-chip" data-filter="os-aberta" type="button">OS em aberto</button>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-secondary" id="btn-backup" type="button" style="margin-right:0;">Salvar backup (.json)</button>
+          <button class="btn-secondary" id="btn-restore" type="button" style="margin-right:0;">Restaurar backup</button>
+          <input type="file" id="file-restore" accept=".json" style="display:none;">
+          <button class="btn-navy" id="btn-export" type="button">Exportar relatório...</button>
+        </div>
+      </div>
+      <div id="table-wrap"></div>
+      <div class="assumption-note">
+        <strong>Como o cálculo funciona:</strong> mínimo exigido e mensalidade são somados por terminal (quantidade × valor do modelo). Dentro dos primeiros 12 meses da Data de Entrega, o cliente fica isento no mês se o volume transacionado atingir esse mínimo; depois dos 12 meses, a mensalidade é cobrada sempre. Um bloqueio manual ativo suspende qualquer cobrança enquanto durar. O modelo S920 foi incluído usando a mesma regra do MOVE5000/PPC930 (R$ 47 / mínimo R$ 15.000) — ajuste se a regra for diferente. Datas de transação são interpretadas no formato do arquivo de origem (dia/mês/ano), sem inversão.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-card" id="profile-modal-card"></div>
+  </div>
+
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal-card" style="max-width:520px;">
+      <div class="modal-head">
+        <div class="modal-head-top">
+          <div>
+            <div class="modal-title">Exportar relatório</div>
+            <div class="modal-sub" style="font-family:var(--font-body);">Escolha o que exportar — o arquivo (.xlsx) sai com o volume transacionado do mês atual e dos 3 meses anteriores, uma coluna por mês.</div>
+          </div>
+          <button class="modal-close" id="export-close" type="button">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="export-options"></div>
+        <div class="form-actions" style="margin-top:6px;">
+          <div></div>
+          <button class="btn-primary" id="export-confirm" type="button">Exportar .xlsx</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  const MODELOS_PADRAO = [
+    {id:'L400', label:'Smart L400', mensalidade:54, minimo:30000},
+    {id:'MOVE5000', label:'MOVE5000', mensalidade:47, minimo:15000},
+    {id:'PPC930', label:'TEF PPC930', mensalidade:47, minimo:15000},
+    {id:'S920', label:'S920', mensalidade:47, minimo:15000},
+  ];
+  const MODELOS_CONFIG_KEY = 'pos-modelos-config-v1';
+  // MODELOS = configuração atual (editável em "Configuração de modelos de terminal").
+  // Começa com os valores padrão e é sobrescrita pelo que estiver salvo no navegador.
+  let MODELOS = MODELOS_PADRAO.map(m=>({...m}));
+  function loadModelosConfig(){
+    try{
+      const raw = localStorage.getItem(MODELOS_CONFIG_KEY);
+      if(!raw) return;
+      const saved = JSON.parse(raw);
+      if(!Array.isArray(saved)) return;
+      MODELOS = MODELOS_PADRAO.map(padrao=>{
+        const s = saved.find(x=>x.id===padrao.id);
+        return s ? {id:padrao.id, label:padrao.label, mensalidade:Number(s.mensalidade)||padrao.mensalidade, minimo:Number(s.minimo)||padrao.minimo} : {...padrao};
+      });
+    }catch(e){ /* mantém padrão se der erro */ }
+  }
+  function saveModelosConfig(){
+    localStorage.setItem(MODELOS_CONFIG_KEY, JSON.stringify(MODELOS.map(m=>({id:m.id, mensalidade:m.mensalidade, minimo:m.minimo}))));
+  }
+  loadModelosConfig();
+
+  const STORAGE_KEY = 'pos-clients-v3';
+  const STORAGE_KEY_OLD = 'pos-clients-v2';
+  const OS_TIPOS = {
+    manutencao: 'Manutenção (SP)',
+    correios: 'Entrega de novo terminal via Correios (outros Estados)'
+  };
+  const OS_STATUS_LABEL = {
+    aberta: 'Aberta',
+    entrega_confirmada: 'Entrega confirmada — aguardando abrir OS de retirada',
+    retirada_aberta: 'OS de retirada aberta',
+    finalizada: 'Finalizada'
+  };
+
+  let clients = [];
+  let editingId = null;
+  let terminalDraft = [];
+  let activeFilter = 'todos';
+  let profileClientId = null;
+  let importDetails = null;
+
+  // ---------- helpers ----------
+  function modeloInfo(id){ return MODELOS.find(m=>m.id===id) || {mensalidade:0,minimo:0,label:id}; }
+  // Valor de mensalidade efetivo de uma maquininha: usa o valor negociado (editado manualmente
+  // no Perfil do cliente) se existir; senão cai no valor padrão configurado para o modelo.
+  function valorMensalidade(m){
+    return (m.valorCobrancaOverride !== null && m.valorCobrancaOverride !== undefined && m.valorCobrancaOverride !== '')
+      ? Number(m.valorCobrancaOverride)
+      : modeloInfo(m.modelo).mensalidade;
+  }
+  function fmtMoney(v){ return (v||0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
+
+  // Prioridade da razão social: manual (editado no formulário) > transações (Dock) >
+  // TEFTI (coluna J). Uma fonte só pode sobrescrever a razão social atual se tiver
+  // prioridade igual ou maior que a fonte que definiu o nome atual.
+  const PRIORIDADE_FONTE_RAZAO = {estabelecimento:4, manual:3, transacoes:2, tefti:1};
+  function aplicarRazaoSocial(client, novoNome, fonteNova){
+    if(!novoNome) return;
+    const prioAtual = PRIORIDADE_FONTE_RAZAO[client.razaoSocialFonte] || 0;
+    const prioNova = PRIORIDADE_FONTE_RAZAO[fonteNova] || 0;
+    if(prioNova >= prioAtual){
+      client.razaoSocial = novoNome;
+      client.razaoSocialFonte = fonteNova;
+    }
+  }
+  function fmtDate(iso){
+    if(!iso) return '-';
+    const [y,m,d] = String(iso).split('T')[0].split('-');
+    if(!y||!m||!d) return '-';
+    return d+'/'+m+'/'+y;
+  }
+  function fmtDateTime(iso){
+    if(!iso) return '-';
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return '-';
+    return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  }
+  function todayISO(){
+    const d = new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function uid(){ return 'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,8); }
+  function onlyDigits(s){ return String(s||'').replace(/\D/g,''); }
+  // CNPJ é sempre a chave única do sistema. Se o arquivo/planilha vier com dígitos zero
+  // à esquerda cortados (comum em .xlsx quando a célula está como número), o cliente
+  // acabaria duplicado. Aqui normalizamos: só dígitos, pad-esquerda com zeros até 14.
+  // Sequências com mais de 14 dígitos ficam como estão (não trunca — sinaliza problema
+  // pra quem for revisar); sequência vazia devolve vazia.
+  function normalizeCnpj(s){
+    const d = onlyDigits(s);
+    if(!d) return '';
+    if(d.length >= 14) return d;
+    return d.padStart(14, '0');
+  }
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function normKey(k){
+    return String(k||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+  function monthsBetween(startISO, endDate){
+    if(!startISO) return null;
+    const start = new Date(startISO+'T00:00:00');
+    if(isNaN(start.getTime())) return null;
+    let months = (endDate.getFullYear()-start.getFullYear())*12 + (endDate.getMonth()-start.getMonth());
+    if(endDate.getDate() < start.getDate()) months -= 1;
+    return months < 0 ? 0 : months;
+  }
+
+  // Interpreta a data no mesmo formato do arquivo de origem: célula-data real do Excel
+  // (sem ambiguidade) ou texto no padrão brasileiro dia/mês/ano — nunca invertido.
+  function parseFlexibleDate(v){
+    if(v instanceof Date && !isNaN(v.getTime())){
+      return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+    }
+    if(typeof v === 'number' && isFinite(v)){
+      // fallback: serial de data do Excel (base 30/12/1899)
+      const epoch = Date.UTC(1899,11,30);
+      const ms = epoch + Math.round(v)*86400000;
+      const d = new Date(ms);
+      return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    }
+    const s = String(v||'').trim();
+    if(!s) return null;
+    let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(m) return new Date(+m[1], +m[2]-1, +m[3]);
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); // dd/mm/yyyy — padrão do arquivo de Transações
+    if(m) return new Date(+m[3], +m[2]-1, +m[1]);
+    return null;
+  }
+  function dateToISO(d){
+    if(!d || isNaN(d.getTime())) return '';
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function dateToMesKey(d){
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  }
+
+  function normalizeMarca(v){
+    const s = normKey(v);
+    if(s.indexOf('onco')>=0) return 'Oncoprod';
+    if(s.indexOf('farma')>=0) return 'Farma';
+    return '';
+  }
+  function maquininhasChipsHtml(c){
+    const ativas = maquininhasAtivas(c);
+    if(ativas.length===0) return '<span style="color:var(--muted); font-size:12px;">Nenhuma maquininha ativa</span>';
+    const groups = {};
+    ativas.forEach(m=>{ groups[m.modelo] = (groups[m.modelo]||0)+1; });
+    return Object.keys(groups).map(mod=>`<span class="chip">${modeloInfo(mod).label} <span class="qty">x${groups[mod]}</span></span>`).join('');
+  }
+
+  function marcaBadgeHtml(marca){
+    if(marca==='Oncoprod') return '<span class="marca-badge marca-oncoprod">Oncoprod</span>';
+    if(marca==='Farma') return '<span class="marca-badge marca-farma">Farma</span>';
+    return '<span class="marca-badge marca-none">Sem marca</span>';
+  }
+
+  function volumeAcumulado(c){
+    return (c.historicoVolumes||[]).reduce((s,h)=> s + (h.valor||0), 0);
+  }
+  function volumeMesAtual(c){
+    const key = dateToMesKey(new Date());
+    const h = (c.historicoVolumes||[]).find(x=>x.mes===key);
+    return h ? h.valor : 0;
+  }
+
+  function clientMinimo(c){
+    return (c.terminais||[]).reduce((s,t)=> s + (t.quantidade||0)*modeloInfo(t.modelo).minimo, 0);
+  }
+  function clientMensalidade(c){
+    return (c.terminais||[]).reduce((s,t)=> s + (t.quantidade||0)*modeloInfo(t.modelo).mensalidade, 0);
+  }
+  function clientTerminalCount(c){
+    return (c.terminais||[]).reduce((s,t)=> s + Number(t.quantidade||0), 0);
+  }
+
+  function bloqueioAtivo(c, hoje){
+    if(!c.bloqueio || !c.bloqueio.inicio || !c.bloqueio.fim) return false;
+    const ini = new Date(c.bloqueio.inicio+'T00:00:00');
+    const fim = new Date(c.bloqueio.fim+'T23:59:59');
+    return hoje >= ini && hoje <= fim;
+  }
+
+  function maquininhasAtivas(c){
+    return (c.maquininhas||[]).filter(m=>m.status==='ativa').slice()
+      .sort((a,b)=> (a.dataEntrega||'').localeCompare(b.dataEntrega||''));
+  }
+
+  // Regra de cobrança:
+  // - Padrão: entre as maquininhas ativas, só a mais antiga (1ª instalada) é elegível a isenção
+  //   (isenta se, dentro dos 12 meses da própria data de entrega, o volume do mês de referência
+  //   atingir o mínimo do modelo dela). As demais maquininhas cobram mensalidade sempre.
+  // - Personalizada (negociação): as maquininhas marcadas "sempre cobra" cobram sempre; as demais
+  //   (o grupo elegível) são isentas em bloco se o volume do mês de referência atingir o valor
+  //   mínimo negociado (c.negociacao.valorMinimoNegociado).
+  function billingStatus(c){
+    const hoje = new Date();
+    const ativas = maquininhasAtivas(c);
+    if(ativas.length===0){
+      // Sem maquininha ativa não é a mesma coisa que "cadastro incompleto": na maioria dos
+      // casos é um cliente que teve as maquininhas retiradas. Ver cadastroIncompletoFlag().
+      return {tag:'semmaquininha', label:'Sem maquininha ativa cadastrada', cobrar:null, detalhe:[]};
+    }
+    if(bloqueioAtivo(c, hoje)){
+      return {tag:'bloqueio', label:'Bloqueio manual até '+fmtDate(c.bloqueio.fim), cobrar:0, detalhe:[]};
+    }
+
+    const neg = c.negociacao || {tipo:'padrao'};
+    const volume = (c.volumeMesReferencia && c.volumeMesReferencia.valor) || 0;
+    let total = 0;
+    const detalhe = [];
+
+    if(neg.tipo === 'personalizada'){
+      const semprePaga = ativas.filter(m=>m.sempreCobra);
+      const elegiveis = ativas.filter(m=>!m.sempreCobra);
+      semprePaga.forEach(m=>{
+        const v = valorMensalidade(m);
+        total += v;
+        detalhe.push({maquininha:m, cobrado:v, motivo:'Sempre cobra (negociação)'});
+      });
+      const minimoNeg = neg.valorMinimoNegociado || 0;
+      const isentoGrupo = elegiveis.length>0 && minimoNeg>0 && volume >= minimoNeg;
+      elegiveis.forEach(m=>{
+        const v = isentoGrupo ? 0 : valorMensalidade(m);
+        total += v;
+        detalhe.push({maquininha:m, cobrado:v, motivo: isentoGrupo
+          ? 'Isenta (negociação — mínimo customizado de '+fmtMoney(minimoNeg)+' atingido)'
+          : 'Cobra (negociação — mínimo customizado de '+fmtMoney(minimoNeg)+' não atingido)'});
+      });
+      if(elegiveis.length>0 && !minimoNeg){
+        detalhe.push({aviso:'Negociação personalizada sem valor mínimo definido — nenhuma maquininha elegível foi isentada.'});
+      }
+    } else {
+      ativas.forEach((m, idx)=>{
+        const mensalidade = valorMensalidade(m);
+        if(idx===0){
+          const minimo = modeloInfo(m.modelo).minimo;
+          const meses = monthsBetween(m.dataEntrega, hoje);
+          let isento = false;
+          let motivo;
+          if(!m.dataEntrega){
+            motivo = '1ª maquininha cobra (data de entrega não informada — use "Marcar entrega")';
+          } else if(meses!==null && meses<12){
+            isento = volume >= minimo;
+            motivo = isento ? '1ª maquininha isenta (mínimo atingido)' : '1ª maquininha cobra (mínimo não atingido)';
+          } else {
+            motivo = '1ª maquininha cobra (passou de 12 meses da entrega)';
+          }
+          const v = isento ? 0 : mensalidade;
+          total += v;
+          detalhe.push({maquininha:m, cobrado:v, motivo});
+        } else {
+          total += mensalidade;
+          detalhe.push({maquininha:m, cobrado:mensalidade, motivo:'Cobra sempre (2ª+ maquininha, regra padrão)'});
+        }
+      });
+    }
+
+    const tag = total===0 ? 'isento' : 'cobrar';
+    const label = total===0 ? 'Isento' : ('A cobrar: '+fmtMoney(total));
+    return {tag, label, cobrar: total, detalhe};
+  }
+
+  const TEFTI_STATUS_ABERTO_EXCLUIDOS = ['finalizado','cancelado','cancelado sem visita','erro abertura - informacoes incompletas'];
+  function teftiOSAbertas(c){
+    return (c.ordensServicoTefti||[]).filter(os=> TEFTI_STATUS_ABERTO_EXCLUIDOS.indexOf(normKey(os.statusOS))<0).length;
+  }
+
+  function inatividadeFlag(c){
+    if(!c.ultimaTransacao) return false;
+    const last = new Date(c.ultimaTransacao);
+    if(isNaN(last.getTime())) return false;
+    const diffDays = (new Date() - last)/(1000*60*60*24);
+    return diffDays >= 90;
+  }
+  function mesesSemTransacaoCount(c){
+    if(!c.ultimaTransacao) return null;
+    const last = new Date(c.ultimaTransacao);
+    if(isNaN(last.getTime())) return null;
+    const diffDays = (new Date() - last)/(1000*60*60*24);
+    return Math.floor(diffDays/30);
+  }
+  // "Cadastro incompleto" é um conceito independente de "sem maquininha ativa" (que na
+  // maioria das vezes só significa que as maquininhas foram retiradas). Um cadastro é
+  // considerado incompleto quando falta razão social real, CNPJ, ou qualquer dado de
+  // contato/estabelecimento (telefone, e-mail, cidade ou UF) — dados que normalmente só
+  // chegam pela importação de Estabelecimento ou por edição manual.
+  function cadastroIncompletoFlag(c){
+    const temNomeReal = c.razaoSocial && !/^CNPJ\s*\d+$/.test(c.razaoSocial);
+    const temCnpj = !!onlyDigits(c.cnpj);
+    const temContato = !!(c.telefone || c.email || c.cidade || c.uf);
+    return !(temNomeReal && temCnpj && temContato);
+  }
+
+  // ---------- storage ----------
+  function migrateClient(c){
+    if(!c.marca) c.marca = '';
+    // CNPJ sempre com 14 dígitos (com zeros à esquerda quando necessário). Isso evita duplicatas
+    // futuras entre importações que trazem o CNPJ com ou sem os zeros à esquerda.
+    if(c.cnpj) c.cnpj = normalizeCnpj(c.cnpj);
+    if(c.telefone===undefined) c.telefone = '';
+    if(c.email===undefined) c.email = '';
+    if(c.cidade===undefined) c.cidade = '';
+    if(c.uf===undefined) c.uf = '';
+    if(c.tabelaPrecos===undefined) c.tabelaPrecos = '';
+    if(!c.ordensServico) c.ordensServico = [];
+    if(!c.historicoVolumes) c.historicoVolumes = [];
+    if(!c.ordensServicoTefti) c.ordensServicoTefti = [];
+    if(!c.negociacao) c.negociacao = {tipo:'padrao', valorMinimoNegociado:0, observacao:''};
+    if(!c.razaoSocialFonte){
+      // Clientes de antes dessa funcionalidade: se o nome já é um nome de verdade, protege
+      // (trata como 'manual') pra nenhuma importação futura trocar sem querer; se é só o
+      // fallback "CNPJ ...", deixa livre pra ser corrigido pela próxima importação que achar
+      // um nome de verdade.
+      c.razaoSocialFonte = /^CNPJ \s*\d+$/.test(c.razaoSocial||'') ? '' : 'manual';
+    }
+    if(!c.maquininhas){
+      // migração de clientes antigos: expande terminais agregados (modelo+quantidade)
+      // em unidades individuais, usando a Data de Entrega geral do cliente como fallback.
+      c.maquininhas = [];
+      (c.terminais||[]).forEach(t=>{
+        for(let i=0;i<(t.quantidade||0); i++){
+          c.maquininhas.push({
+            id: uid(), modelo: t.modelo, dataEntrega: c.dataEntrega || '', dataRetirada:'',
+            status:'ativa', osInstalacao:'', osDesinstalacao:'', rastreio:'', numeroSerie:'',
+            valorCobrancaOverride:null, sempreCobra:false, origem:'manual'
+          });
+        }
+      });
+    }
+    // garante os campos novos em maquininhas cadastradas antes dessas funcionalidades existirem
+    c.maquininhas.forEach(m=>{
+      if(m.numeroSerie===undefined) m.numeroSerie = '';
+      if(m.valorCobrancaOverride===undefined) m.valorCobrancaOverride = null;
+    });
+    return c;
+  }
+  function loadClients(){
+    try{
+      let raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        // migra dados do formato anterior (v2), se existirem
+        const oldRaw = localStorage.getItem(STORAGE_KEY_OLD);
+        if(oldRaw) raw = oldRaw;
+      }
+      clients = raw ? JSON.parse(raw) : [];
+      clients = clients.map(migrateClient);
+    }catch(e){ clients = []; }
+    render();
+  }
+  function saveClients(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
+    }catch(e){
+      showStatus('Não foi possível salvar. Verifique o espaço do navegador.', true);
+    }
+  }
+  function showStatus(msg, isErr){
+    const el = document.getElementById('status-msg');
+    el.textContent = msg;
+    el.style.color = isErr ? 'var(--danger)' : 'var(--accent)';
+    setTimeout(()=>{ if(el.textContent===msg) el.textContent=''; }, 4000);
+  }
+
+  // ---------- terminal draft rows ----------
+  function addTerminalRow(modelo, quantidade){
+    terminalDraft.push({modelo: modelo || 'MOVE5000', quantidade: quantidade || 1});
+    renderTerminalRows();
+  }
+  function removeTerminalRow(idx){ terminalDraft.splice(idx,1); renderTerminalRows(); }
+  function renderTerminalRows(){
+    const wrap = document.getElementById('terminal-rows');
+    wrap.innerHTML = '';
+    terminalDraft.forEach((row, idx)=>{
+      const div = document.createElement('div');
+      div.className = 'terminal-row';
+      const subtotal = row.quantidade * modeloInfo(row.modelo).mensalidade;
+      div.innerHTML = `
+        <div class="field">
+          <label>Modelo</label>
+          <select data-idx="${idx}" class="sel-modelo">
+            ${MODELOS.map(m=>`<option value="${m.id}" ${m.id===row.modelo?'selected':''}>${m.label} (${fmtMoney(m.mensalidade)} / mín ${fmtMoney(m.minimo)})</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Qtd</label>
+          <input type="text" inputmode="numeric" class="inp-qtd" data-idx="${idx}" value="${row.quantidade}">
+        </div>
+        <div class="field">
+          <label>Subtotal</label>
+          <div class="subtotal-display">${fmtMoney(subtotal)}</div>
+        </div>
+        <button class="icon-btn" data-idx="${idx}" title="Remover" type="button">✕</button>
+      `;
+      wrap.appendChild(div);
+    });
+    wrap.querySelectorAll('.sel-modelo').forEach(sel=>{
+      sel.addEventListener('change', e=>{
+        terminalDraft[+e.target.dataset.idx].modelo = e.target.value;
+        renderTerminalRows();
+      });
+    });
+    wrap.querySelectorAll('.inp-qtd').forEach(inp=>{
+      inp.addEventListener('input', e=>{
+        const v = parseInt(e.target.value.replace(/[^0-9]/g,''),10);
+        terminalDraft[+e.target.dataset.idx].quantidade = isNaN(v) ? 0 : v;
+        updatePreviewTotal();
+      });
+    });
+    wrap.querySelectorAll('.icon-btn').forEach(btn=>{
+      btn.addEventListener('click', e=>{ removeTerminalRow(+e.target.dataset.idx); updatePreviewTotal(); });
+    });
+    updatePreviewTotal();
+  }
+  function updatePreviewTotal(){
+    const total = terminalDraft.reduce((s,r)=> s + (r.quantidade||0)*modeloInfo(r.modelo).mensalidade, 0);
+    document.getElementById('preview-total').textContent = fmtMoney(total);
+  }
+  document.getElementById('btn-add-terminal').addEventListener('click', ()=> addTerminalRow());
+
+  document.getElementById('f-bloqueio-ativo').addEventListener('change', e=>{
+    document.getElementById('bloqueio-fields').style.display = e.target.checked ? 'grid' : 'none';
+  });
+
+  document.getElementById('f-neg-tipo').addEventListener('change', e=>{
+    const personalizada = e.target.value === 'personalizada';
+    document.getElementById('f-neg-minimo-wrap').style.display = personalizada ? 'flex' : 'none';
+    document.getElementById('f-neg-obs-wrap').style.display = personalizada ? 'flex' : 'none';
+    document.getElementById('negociacao-hint').style.display = personalizada ? 'block' : 'none';
+  });
+
+  // ---------- form ----------
+  function resetForm(){
+    editingId = null;
+    document.getElementById('form-title').textContent = 'Adicionar cliente';
+    document.getElementById('f-razao').value = '';
+    document.getElementById('f-cnpj').value = '';
+    document.getElementById('f-marca').value = '';
+    document.getElementById('f-entrega').value = '';
+    document.getElementById('f-retirada').value = '';
+    document.getElementById('f-obs').value = '';
+    document.getElementById('f-bloqueio-ativo').checked = false;
+    document.getElementById('bloqueio-fields').style.display = 'none';
+    document.getElementById('f-bloqueio-inicio').value = '';
+    document.getElementById('f-bloqueio-fim').value = '';
+    document.getElementById('f-bloqueio-justificativa').value = '';
+    document.getElementById('f-neg-tipo').value = 'padrao';
+    document.getElementById('f-neg-minimo').value = '';
+    document.getElementById('f-neg-obs').value = '';
+    document.getElementById('f-neg-minimo-wrap').style.display = 'none';
+    document.getElementById('f-neg-obs-wrap').style.display = 'none';
+    document.getElementById('negociacao-hint').style.display = 'none';
+    terminalDraft = [{modelo:'MOVE5000', quantidade:1}];
+    renderTerminalRows();
+    document.getElementById('terminals-note').style.display = 'none';
+    document.getElementById('btn-cancel-edit').style.display = 'none';
+  }
+
+  function loadIntoForm(c){
+    editingId = c.id;
+    document.getElementById('form-title').textContent = 'Editando: ' + c.razaoSocial;
+    document.getElementById('f-razao').value = c.razaoSocial;
+    document.getElementById('f-cnpj').value = c.cnpj;
+    document.getElementById('f-marca').value = c.marca || '';
+    document.getElementById('f-entrega').value = c.dataEntrega || '';
+    document.getElementById('f-retirada').value = c.dataRetirada || '';
+    document.getElementById('f-obs').value = c.obs || '';
+    const b = c.bloqueio || {};
+    const hasBloqueio = !!(b.inicio || b.fim || b.justificativa);
+    document.getElementById('f-bloqueio-ativo').checked = hasBloqueio;
+    document.getElementById('bloqueio-fields').style.display = hasBloqueio ? 'grid' : 'none';
+    document.getElementById('f-bloqueio-inicio').value = b.inicio || '';
+    document.getElementById('f-bloqueio-fim').value = b.fim || '';
+    document.getElementById('f-bloqueio-justificativa').value = b.justificativa || '';
+    const neg = c.negociacao || {tipo:'padrao'};
+    document.getElementById('f-neg-tipo').value = neg.tipo || 'padrao';
+    document.getElementById('f-neg-minimo').value = neg.valorMinimoNegociado || '';
+    document.getElementById('f-neg-obs').value = neg.observacao || '';
+    const personalizada = neg.tipo === 'personalizada';
+    document.getElementById('f-neg-minimo-wrap').style.display = personalizada ? 'flex' : 'none';
+    document.getElementById('f-neg-obs-wrap').style.display = personalizada ? 'flex' : 'none';
+    document.getElementById('negociacao-hint').style.display = personalizada ? 'block' : 'none';
+    terminalDraft = (c.terminais||[]).map(t=>({modelo:t.modelo, quantidade:t.quantidade}));
+    if(terminalDraft.length===0) terminalDraft = [{modelo:'MOVE5000', quantidade:1}];
+    renderTerminalRows();
+    document.getElementById('terminals-note').style.display = (c.maquininhas && c.maquininhas.length>0) ? 'block' : 'none';
+    document.getElementById('btn-cancel-edit').style.display = 'inline-block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  document.getElementById('btn-cancel-edit').addEventListener('click', resetForm);
+
+  document.getElementById('btn-save').addEventListener('click', ()=>{
+    const razao = document.getElementById('f-razao').value.trim();
+    if(!razao){ showStatus('Informe a Razão Social.', true); return; }
+    const validTerminais = terminalDraft.filter(t=> t.quantidade > 0);
+    if(validTerminais.length===0){ showStatus('Adicione ao menos um terminal com quantidade maior que zero.', true); return; }
+
+    const bloqueioAtivoChk = document.getElementById('f-bloqueio-ativo').checked;
+    let bloqueio = {};
+    if(bloqueioAtivoChk){
+      const ini = document.getElementById('f-bloqueio-inicio').value;
+      const fim = document.getElementById('f-bloqueio-fim').value;
+      const just = document.getElementById('f-bloqueio-justificativa').value.trim();
+      if(!ini || !fim || !just){
+        showStatus('Bloqueio manual precisa de início, fim e justificativa.', true); return;
+      }
+      bloqueio = {inicio:ini, fim:fim, justificativa:just};
+    }
+
+    const negTipo = document.getElementById('f-neg-tipo').value;
+    let negociacao = {tipo:'padrao', valorMinimoNegociado:0, observacao:''};
+    if(negTipo === 'personalizada'){
+      const minimoRaw = document.getElementById('f-neg-minimo').value.replace(/[^\d.,]/g,'').replace(',','.');
+      const minimo = parseFloat(minimoRaw) || 0;
+      if(!minimo){ showStatus('Informe o valor mínimo negociado para a negociação personalizada.', true); return; }
+      negociacao = {
+        tipo: 'personalizada',
+        valorMinimoNegociado: minimo,
+        observacao: document.getElementById('f-neg-obs').value.trim()
+      };
+    }
+
+    const existing = editingId ? clients.find(c=>c.id===editingId) : null;
+
+    // Preserva maquininhas individuais já existentes (vindas de import ou edição no Perfil).
+    // Só gera novas a partir do bloco "Terminais" acima quando o cliente ainda não tem
+    // nenhuma maquininha cadastrada (cliente novo, ou legado nunca detalhado).
+    let maquininhas;
+    if(existing && existing.maquininhas && existing.maquininhas.length){
+      maquininhas = existing.maquininhas;
+    }else{
+      const dataEntregaGeral = document.getElementById('f-entrega').value;
+      maquininhas = [];
+      validTerminais.forEach(t=>{
+        for(let i=0;i<t.quantidade;i++){
+          maquininhas.push({
+            id: uid(), modelo: t.modelo, dataEntrega: dataEntregaGeral, dataRetirada:'',
+            status:'ativa', osInstalacao:'', osDesinstalacao:'', rastreio:'', numeroSerie:'',
+            valorCobrancaOverride:null, sempreCobra:false, origem:'manual'
+          });
+        }
+      });
+    }
+
+    const record = {
+      id: editingId || uid(),
+      razaoSocial: razao,
+      razaoSocialFonte: 'manual', // nome confirmado manualmente no formulário tem prioridade máxima
+      cnpj: normalizeCnpj(document.getElementById('f-cnpj').value.trim()),
+      marca: document.getElementById('f-marca').value,
+      dataEntrega: document.getElementById('f-entrega').value,
+      dataRetirada: document.getElementById('f-retirada').value,
+      obs: document.getElementById('f-obs').value.trim(),
+      terminais: validTerminais,
+      maquininhas: maquininhas,
+      bloqueio: bloqueio,
+      negociacao: negociacao,
+      volumeMesReferencia: existing ? (existing.volumeMesReferencia || null) : null,
+      historicoVolumes: existing ? (existing.historicoVolumes || []) : [],
+      ultimaTransacao: existing ? (existing.ultimaTransacao || null) : null,
+      ordensServico: existing ? (existing.ordensServico || []) : [],
+      ordensServicoTefti: existing ? (existing.ordensServicoTefti || []) : []
+    };
+
+    if(editingId){
+      const idx = clients.findIndex(c=>c.id===editingId);
+      if(idx>=0) clients[idx] = record;
+      showStatus('Cliente atualizado.');
+    }else{
+      clients.push(record);
+      showStatus('Cliente adicionado.');
+    }
+    saveClients();
+    resetForm();
+    render();
+  });
+
+  function deleteClient(id){
+    clients = clients.filter(c=>c.id!==id);
+    saveClients();
+    render();
+  }
+
+  // ---------- filters ----------
+  document.querySelectorAll('.filter-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      render();
+    });
+  });
+  document.getElementById('search').addEventListener('input', render);
+
+  // ---------- render ----------
+  function render(){
+    const search = (document.getElementById('search').value || '').toLowerCase();
+    const searchDigits = onlyDigits(search);
+    let filtered = clients.filter(c=>
+      c.razaoSocial.toLowerCase().includes(search)
+      || (c.cnpj||'').toLowerCase().includes(search)
+      || (searchDigits && (c.cnpj||'').includes(searchDigits))
+    );
+
+    const withStatus = filtered.map(c=>({c, status:billingStatus(c), inativo:inatividadeFlag(c)}));
+
+    if(activeFilter==='cobrar') filtered = withStatus.filter(x=>x.status.tag==='cobrar').map(x=>x.c);
+    else if(activeFilter==='isento') filtered = withStatus.filter(x=>x.status.tag==='isento').map(x=>x.c);
+    else if(activeFilter==='incompleto') filtered = filtered.filter(c=>cadastroIncompletoFlag(c));
+    else if(activeFilter==='sem-maquininha') filtered = withStatus.filter(x=>x.status.tag==='semmaquininha').map(x=>x.c);
+    else if(activeFilter==='inativo') filtered = withStatus.filter(x=>x.inativo).map(x=>x.c);
+    else if(activeFilter==='marca-oncoprod') filtered = filtered.filter(c=>c.marca==='Oncoprod');
+    else if(activeFilter==='marca-farma') filtered = filtered.filter(c=>c.marca==='Farma');
+    else if(activeFilter==='os-aberta') filtered = filtered.filter(c=>(c.ordensServico||[]).some(os=>os.status!=='finalizada') || teftiOSAbertas(c)>0);
+
+    const allStatus = clients.map(c=>billingStatus(c));
+    document.getElementById('stat-clientes').textContent = clients.length;
+    document.getElementById('stat-cobrar').textContent = allStatus.filter(s=>s.tag==='cobrar').length;
+    document.getElementById('stat-total').textContent = fmtMoney(allStatus.reduce((s,x)=> s + (x.cobrar||0), 0));
+
+    const wrap = document.getElementById('table-wrap');
+    if(filtered.length===0){
+      wrap.innerHTML = `<div class="empty-state"><div class="big">Nenhum cliente encontrado</div>Ajuste os filtros ou cadastre/importe clientes.</div>`;
+      return;
+    }
+
+    const rows = filtered.map(c=>{
+      const status = billingStatus(c);
+      const inativo = inatividadeFlag(c);
+      const chips = maquininhasChipsHtml(c);
+      const badgeClass = status.tag==='isento' ? 'status-isento' : status.tag==='bloqueio' ? 'status-bloqueio' : status.tag==='semmaquininha' ? 'status-incompleto' : 'status-cobrar';
+      const volumeMes = c.volumeMesReferencia ? (c.volumeMesReferencia.mes + ': ' + fmtMoney(c.volumeMesReferencia.valor)) : 'Sem importação ainda';
+      const volumeTotal = fmtMoney(volumeAcumulado(c));
+      const cadastroIncompleto = cadastroIncompletoFlag(c);
+      const rowClass = cadastroIncompleto ? 'incompleto' : '';
+      const osAbertas = (c.ordensServico||[]).filter(os=>os.status!=='finalizada').length + teftiOSAbertas(c);
+      return `
+        <tr class="${rowClass}">
+          <td>
+            <div class="razao">${escapeHtml(c.razaoSocial)} ${marcaBadgeHtml(c.marca)}${cadastroIncompleto ? '<span class="incompleto-tag">Cadastro incompleto</span>' : ''}</div>
+            <div class="cnpj">${escapeHtml(c.cnpj || '-')}</div>
+            ${osAbertas>0 ? `<div style="margin-top:4px;"><span class="os-status os-status-aberta">${osAbertas} OS em aberto</span></div>` : ''}
+          </td>
+          <td>${fmtDate(c.dataEntrega)}<br><span style="color:var(--muted); font-size:11.5px;">Retirada: ${fmtDate(c.dataRetirada)}</span></td>
+          <td>${chips}</td>
+          <td class="volume-cell">Acumulado: <strong style="color:var(--navy);">${volumeTotal}</strong><br>${volumeMes}</td>
+          <td><span class="status-badge ${badgeClass}">${status.label}</span>${inativo ? '<br><span class="inatividade-tag">⚠ 3+ meses sem transação — avaliar retirada</span>' : ''}</td>
+          <td class="valor-cell">${status.cobrar===null ? '-' : fmtMoney(status.cobrar)}</td>
+          <td>
+            <div class="row-actions">
+              <button class="perfil" data-id="${c.id}" type="button">Perfil</button>
+              <button class="edit" data-id="${c.id}" type="button">Editar</button>
+              <button class="del" data-id="${c.id}" type="button">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Datas</th>
+            <th>Terminais</th>
+            <th>Volume transacionado</th>
+            <th>Status mensalidade</th>
+            <th>Valor a cobrar</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+    wrap.querySelectorAll('.perfil').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        openProfile(e.target.dataset.id);
+      });
+    });
+    wrap.querySelectorAll('.edit').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const c = clients.find(x=>x.id===e.target.dataset.id);
+        if(c) loadIntoForm(c);
+      });
+    });
+    wrap.querySelectorAll('.del').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        if(confirm('Excluir este cliente da lista?')) deleteClient(e.target.dataset.id);
+      });
+    });
+  }
+
+  // ---------- perfil do cliente (modal) ----------
+  function openProfile(id){
+    profileClientId = id;
+    renderProfile();
+    document.getElementById('profile-modal').classList.add('open');
+  }
+  function closeProfile(){
+    profileClientId = null;
+    document.getElementById('profile-modal').classList.remove('open');
+  }
+  document.getElementById('profile-modal').addEventListener('click', e=>{
+    if(e.target.id==='profile-modal') closeProfile();
+  });
+
+  function renderProfile(){
+    const c = clients.find(x=>x.id===profileClientId);
+    const card = document.getElementById('profile-modal-card');
+    if(!c){ card.innerHTML=''; return; }
+
+    const status = billingStatus(c);
+    const inativo = inatividadeFlag(c);
+    const badgeClass = status.tag==='isento' ? 'status-isento' : status.tag==='bloqueio' ? 'status-bloqueio' : status.tag==='semmaquininha' ? 'status-incompleto' : 'status-cobrar';
+    const cadastroIncompleto = cadastroIncompletoFlag(c);
+    const mesAtualKey = dateToMesKey(new Date());
+    const mesAtualLabel = c.historicoVolumes && c.historicoVolumes.find(h=>h.mes===mesAtualKey) ? mesAtualKey : (c.volumeMesReferencia ? c.volumeMesReferencia.mes+' (mês de referência mais recente)' : mesAtualKey);
+
+    const histRows = (c.historicoVolumes||[]).slice().sort((a,b)=>b.mes.localeCompare(a.mes)).map(h=>
+      `<tr><td>${h.mes}</td><td>${fmtMoney(h.valor)}</td></tr>`
+    ).join('') || '<tr><td colspan="2" class="no-os">Nenhuma transação importada ainda.</td></tr>';
+
+    const chips = maquininhasChipsHtml(c);
+
+    const osList = (c.ordensServico||[]).slice().sort((a,b)=> (b.dataAbertura||'').localeCompare(a.dataAbertura||''));
+    const osHtml = osList.length ? osList.map(os=>osCardHtml(os)).join('') : '<div class="no-os">Nenhuma OS registrada para este cliente.</div>';
+
+    const neg = c.negociacao || {tipo:'padrao'};
+    const negLabel = neg.tipo==='personalizada'
+      ? `Personalizada — mínimo ${fmtMoney(neg.valorMinimoNegociado||0)}${neg.observacao ? ' — '+escapeHtml(neg.observacao) : ''}`
+      : 'Padrão (1ª maquininha isenta, demais cobram)';
+
+    const maquininhasHtml = maquininhasTableHtml(c, status);
+    const teftiOSHtml = teftiOSTableHtml(c);
+    const manutencaoHtml = manutencaoTableHtml(c);
+
+    card.innerHTML = `
+      <div class="modal-head">
+        <div class="modal-head-top">
+          <div>
+            <div class="modal-title">${escapeHtml(c.razaoSocial)} ${marcaBadgeHtml(c.marca)}${cadastroIncompleto ? '<span class="incompleto-tag">Cadastro incompleto</span>' : ''}</div>
+            <div class="modal-sub">${escapeHtml(c.cnpj || 'CNPJ não informado')}</div>
+          </div>
+          <button class="modal-close" id="profile-close" type="button">✕</button>
+        </div>
+        <div class="profile-volumes">
+          <div>
+            <div class="profile-vol-value">${fmtMoney(volumeAcumulado(c))}</div>
+            <div class="profile-vol-label">Volume acumulado (histórico completo)</div>
+          </div>
+          <div>
+            <div class="profile-vol-value">${fmtMoney(volumeMesAtual(c))}</div>
+            <div class="profile-vol-label">Volume — mês ${mesAtualLabel}</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="profile-section">
+          <div class="profile-section-title">Situação</div>
+          <div class="profile-grid">
+            <div>
+              <div class="profile-kv-label">Status mensalidade</div>
+              <div class="profile-kv-value"><span class="status-badge ${badgeClass}">${status.label}</span></div>
+            </div>
+            <div>
+              <div class="profile-kv-label">Valor a cobrar</div>
+              <div class="profile-kv-value">${status.cobrar===null?'-':fmtMoney(status.cobrar)}</div>
+            </div>
+            <div>
+              <div class="profile-kv-label">Inatividade</div>
+              <div class="profile-kv-value">${inativo ? '⚠ 3+ meses sem transação' : 'Ativo'}</div>
+            </div>
+            <div>
+              <div class="profile-kv-label">Última transação</div>
+              <div class="profile-kv-value">${c.ultimaTransacao ? fmtDate(dateToISO(new Date(c.ultimaTransacao))) : '-'}</div>
+            </div>
+            <div>
+              <div class="profile-kv-label">Negociação de isenção</div>
+              <div class="profile-kv-value" style="font-weight:600; font-size:12.5px;">${negLabel}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Cadastro</div>
+          <div class="profile-grid">
+            <div><div class="profile-kv-label">Data de Entrega (1ª maquininha)</div><div class="profile-kv-value">${fmtDate(c.dataEntrega)}</div></div>
+            <div><div class="profile-kv-label">Data de Retirada (mais recente)</div><div class="profile-kv-value">${fmtDate(c.dataRetirada)}</div></div>
+            <div><div class="profile-kv-label">Marca</div><div class="profile-kv-value">${marcaBadgeHtml(c.marca)}</div></div>
+            <div><div class="profile-kv-label">Observações</div><div class="profile-kv-value">${escapeHtml(c.obs)||'-'}</div></div>
+          </div>
+          <div style="margin-top:12px;">${chips}</div>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Dados do estabelecimento</div>
+          <div class="profile-grid">
+            <div class="field">
+              <label class="profile-kv-label">Telefone</label>
+              <input class="inline-edit-input" type="text" data-profile-field="telefone" value="${escapeHtml(c.telefone)}" placeholder="Não informado">
+            </div>
+            <div class="field">
+              <label class="profile-kv-label">E-mail</label>
+              <input class="inline-edit-input" type="text" data-profile-field="email" value="${escapeHtml(c.email)}" placeholder="Não informado">
+            </div>
+            <div class="field">
+              <label class="profile-kv-label">Cidade</label>
+              <input class="inline-edit-input" type="text" data-profile-field="cidade" value="${escapeHtml(c.cidade)}" placeholder="Não informado">
+            </div>
+            <div class="field">
+              <label class="profile-kv-label">UF</label>
+              <input class="inline-edit-input" type="text" maxlength="2" style="text-transform:uppercase;" data-profile-field="uf" value="${escapeHtml(c.uf)}" placeholder="Não informado">
+            </div>
+            <div class="field span-2">
+              <label class="profile-kv-label">Tabela de Preços</label>
+              <input class="inline-edit-input" type="text" data-profile-field="tabelaPrecos" value="${escapeHtml(c.tabelaPrecos)}" placeholder="Não informado">
+            </div>
+          </div>
+          <div class="assumption-note" style="margin-top:12px;">
+            Estes campos são preenchidos automaticamente pela importação "Importar Estabelecimento" (atualizada pelo CNPJ), mas também podem ser editados aqui manualmente.
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Maquininhas (${(c.maquininhas||[]).length})</div>
+          ${maquininhasHtml}
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Histórico de OS — TEFTI (${(c.ordensServicoTefti||[]).length})</div>
+          ${teftiOSHtml}
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Histórico de Manutenção</div>
+          ${manutencaoHtml}
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Histórico mensal</div>
+          <table class="hist-table"><thead><tr><th>Mês</th><th>Volume</th></tr></thead><tbody>${histRows}</tbody></table>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Sinalização de defeito / OS (manual)</div>
+          ${osHtml}
+          <div class="os-form">
+            <div class="field"><label>Nº da OS</label><input type="text" id="os-numero" placeholder="Ex: 10234"></div>
+            <div class="field"><label>Tipo</label>
+              <select id="os-tipo">
+                <option value="manutencao">${OS_TIPOS.manutencao}</option>
+                <option value="correios">${OS_TIPOS.correios}</option>
+              </select>
+            </div>
+            <div class="field"><label>Defeito apresentado</label><input type="text" id="os-defeito" placeholder="Ex: leitor de cartão não lê"></div>
+            <button class="btn-navy" id="os-add" type="button">Abrir OS</button>
+          </div>
+        </div>
+
+        <div class="profile-section" style="text-align:right;">
+          <button class="btn-secondary" id="profile-edit" type="button">Editar cadastro</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('profile-close').addEventListener('click', closeProfile);
+
+    card.querySelectorAll('[data-profile-field]').forEach(input=>{
+      input.addEventListener('change', e=>{
+        const field = e.target.dataset.profileField;
+        let val = e.target.value.trim();
+        if(field==='uf') val = val.toUpperCase().slice(0,2);
+        c[field] = val;
+        saveClients();
+        render();
+        // não chama renderProfile() de novo pra não perder o foco/scroll do usuário no meio da edição
+      });
+    });
+
+    document.getElementById('profile-edit').addEventListener('click', ()=>{
+      closeProfile();
+      loadIntoForm(c);
+    });
+    document.getElementById('os-add').addEventListener('click', ()=>{
+      const numero = document.getElementById('os-numero').value.trim();
+      const tipo = document.getElementById('os-tipo').value;
+      const defeito = document.getElementById('os-defeito').value.trim();
+      if(!numero || !defeito){ alert('Informe o número da OS e o defeito apresentado.'); return; }
+      c.ordensServico = c.ordensServico || [];
+      c.ordensServico.push({
+        id: uid(), numero, tipo, defeito,
+        dataAbertura: todayISO(),
+        dataFinalizacaoManutencao: '',
+        dataEntregaConfirmada: '',
+        numeroRetirada: '',
+        dataFinalizacaoRetirada: '',
+        status: 'aberta'
+      });
+      saveClients();
+      renderProfile();
+      render();
+    });
+
+    card.querySelectorAll('[data-os-action]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const osId = e.target.dataset.osId;
+        const action = e.target.dataset.osAction;
+        const os = (c.ordensServico||[]).find(o=>o.id===osId);
+        if(!os) return;
+        if(action==='finalizar-manutencao'){
+          os.dataFinalizacaoManutencao = todayISO();
+          os.status = 'finalizada';
+        }else if(action==='confirmar-entrega'){
+          os.dataEntregaConfirmada = todayISO();
+          os.status = 'entrega_confirmada';
+        }else if(action==='abrir-retirada'){
+          const num = prompt('Número da OS de retirada do terminal defeituoso:');
+          if(!num) return;
+          os.numeroRetirada = num.trim();
+          os.status = 'retirada_aberta';
+        }else if(action==='finalizar-retirada'){
+          os.dataFinalizacaoRetirada = todayISO();
+          os.status = 'finalizada';
+        }
+        saveClients();
+        renderProfile();
+        render();
+      });
+    });
+
+    // ---- ações da seção Maquininhas ----
+    card.querySelectorAll('[data-maq-action]').forEach(el=>{
+      el.addEventListener(el.tagName==='INPUT' ? 'change' : 'click', e=>{
+        const maqId = e.target.dataset.maqId;
+        const action = e.target.dataset.maqAction;
+        const m = (c.maquininhas||[]).find(x=>x.id===maqId);
+        if(!m) return;
+        if(action==='toggle-sempre-cobra'){
+          m.sempreCobra = e.target.checked;
+        }else if(action==='marcar-retirada'){
+          const hoje = todayISO();
+          const data = prompt('Data de retirada (dd/mm/aaaa):', fmtDate(hoje));
+          const d = parseFlexibleDate(data);
+          if(!d){ alert('Data inválida.'); return; }
+          m.status = 'retirada';
+          m.dataRetirada = dateToISO(d);
+        }else if(action==='editar-entrega'){
+          m.dataEntrega = e.target.value || '';
+          if(m.dataEntrega && (!c.dataEntrega || m.dataEntrega < c.dataEntrega)) c.dataEntrega = m.dataEntrega;
+        }else if(action==='editar-retirada'){
+          m.dataRetirada = e.target.value || '';
+        }else if(action==='editar-rastreio'){
+          m.rastreio = e.target.value.trim();
+        }else if(action==='editar-serie'){
+          m.numeroSerie = e.target.value.trim();
+        }else if(action==='editar-os-instalacao'){
+          m.osInstalacao = e.target.value.trim();
+        }else if(action==='editar-os-desinstalacao'){
+          m.osDesinstalacao = e.target.value.trim();
+        }else if(action==='editar-valor'){
+          const raw = String(e.target.value).replace(/[^\d.,]/g,'').replace(',','.');
+          const val = parseFloat(raw);
+          if(isNaN(val) || val<0){ alert('Valor inválido.'); renderProfile(); return; }
+          m.valorCobrancaOverride = val;
+        }else if(action==='reativar'){
+          m.status = 'ativa';
+          m.dataRetirada = '';
+        }else if(action==='excluir'){
+          if(!confirm('Excluir esta maquininha do cadastro? Esta ação não pode ser desfeita.')) return;
+          c.maquininhas = c.maquininhas.filter(x=>x.id!==maqId);
+        }
+        saveClients();
+        renderProfile();
+        render();
+      });
+    });
+
+    const addMaqBtn = document.getElementById('maq-add');
+    if(addMaqBtn){
+      addMaqBtn.addEventListener('click', ()=>{
+        const modelo = document.getElementById('maq-modelo').value;
+        const dataEntrega = document.getElementById('maq-entrega').value;
+        c.maquininhas = c.maquininhas || [];
+        c.maquininhas.push({
+          id: uid(), modelo, dataEntrega, dataRetirada:'', status:'ativa',
+          osInstalacao:'', osDesinstalacao:'', rastreio:'', numeroSerie:'',
+          valorCobrancaOverride:null, sempreCobra:false, origem:'manual'
+        });
+        saveClients();
+        renderProfile();
+        render();
+      });
+    }
+  }
+
+  // ---- tabela de maquininhas individuais no perfil ----
+  function maquininhasTableHtml(c, status){
+    const maqs = (c.maquininhas||[]).slice().sort((a,b)=> (b.dataEntrega||'').localeCompare(a.dataEntrega||''));
+    const detalhePorId = {};
+    (status.detalhe||[]).forEach(d=>{ if(d.maquininha) detalhePorId[d.maquininha.id] = d; });
+    const neg = c.negociacao || {tipo:'padrao'};
+
+    const rows = maqs.map(m=>{
+      const d = detalhePorId[m.id];
+      const cobrancaCell = m.status!=='ativa' ? '-' : (d ? (d.cobrado===0 ? '<span style="color:var(--accent); font-weight:700;">Isenta</span>' : fmtMoney(d.cobrado)) : '-');
+      const motivoCell = m.status!=='ativa' ? 'Retirada' : (d ? d.motivo : '-');
+      const entregaCell = `<input type="date" class="inline-edit-input" data-maq-action="editar-entrega" data-maq-id="${m.id}" value="${m.dataEntrega||''}">`;
+      const retiradaCell = m.status==='ativa'
+        ? '-'
+        : `<input type="date" class="inline-edit-input" data-maq-action="editar-retirada" data-maq-id="${m.id}" value="${m.dataRetirada||''}">`;
+      const rastreioCell = `<input type="text" class="inline-edit-input" data-maq-action="editar-rastreio" data-maq-id="${m.id}" value="${escapeHtml(m.rastreio)}" placeholder="-">`;
+      const serieCell = `<input type="text" class="inline-edit-input" style="font-family:var(--font-mono);" data-maq-action="editar-serie" data-maq-id="${m.id}" value="${escapeHtml(m.numeroSerie)}" placeholder="-">`;
+      const osInstCell = `<input type="text" class="inline-edit-input" style="font-family:var(--font-mono);" data-maq-action="editar-os-instalacao" data-maq-id="${m.id}" value="${escapeHtml(m.osInstalacao)}" placeholder="OS instalação">`;
+      const osDesinstCell = `<input type="text" class="inline-edit-input" style="font-family:var(--font-mono); margin-top:4px;" data-maq-action="editar-os-desinstalacao" data-maq-id="${m.id}" value="${escapeHtml(m.osDesinstalacao)}" placeholder="OS desinstalação">`;
+      const acoes = m.status==='ativa'
+        ? `<button data-maq-action="marcar-retirada" data-maq-id="${m.id}" type="button">Marcar retirada</button> <button class="del" data-maq-action="excluir" data-maq-id="${m.id}" type="button">Excluir</button>`
+        : `<button data-maq-action="reativar" data-maq-id="${m.id}" type="button">Reativar</button> <button class="del" data-maq-action="excluir" data-maq-id="${m.id}" type="button">Excluir</button>`;
+      const sempreCobraCell = neg.tipo==='personalizada'
+        ? `<input type="checkbox" data-maq-action="toggle-sempre-cobra" data-maq-id="${m.id}" ${m.sempreCobra?'checked':''}>`
+        : '<span style="color:var(--muted);">-</span>';
+      const valorInput = `<input type="text" inputmode="numeric" data-maq-action="editar-valor" data-maq-id="${m.id}" value="${valorMensalidade(m)}" style="width:74px;" title="Valor da mensalidade quando esta maquininha for cobrada (padrão do modelo: ${fmtMoney(modeloInfo(m.modelo).mensalidade)})">`;
+      return `<tr>
+        <td>${modeloInfo(m.modelo).label||m.modelo||'-'}</td>
+        <td>${m.status==='ativa' ? '<span class="status-badge status-isento" style="background:var(--accent-soft); color:var(--accent);">Ativa</span>' : '<span class="status-badge status-bloqueio">Retirada</span>'}</td>
+        <td>${entregaCell}</td>
+        <td>${retiradaCell}</td>
+        <td>${rastreioCell}</td>
+        <td>${serieCell}</td>
+        <td>${osInstCell}${osDesinstCell}</td>
+        <td>${valorInput}</td>
+        <td>${cobrancaCell}<br><span style="color:var(--muted); font-size:11px;">${escapeHtml(motivoCell)}</span></td>
+        <td style="text-align:center;">${sempreCobraCell}</td>
+        <td><div class="row-actions">${acoes}</div></td>
+      </tr>`;
+    }).join('') || '';
+
+    const table = maqs.length ? `
+      <div class="table-scroll">
+        <table class="import-details maq-table" style="margin-top:0;">
+          <thead><tr>
+            <th>Modelo</th><th>Status</th><th>Entrega</th><th>Retirada</th><th>Rastreio</th><th>Nº Série</th><th>OS Inst./Desinst.</th><th>Valor mensalidade</th><th>Cobrança</th><th>Sempre cobra</th><th></th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>` : '<div class="no-os">Nenhuma maquininha cadastrada ainda — chega automaticamente pela importação da TEFTI ou pode ser adicionada manualmente abaixo.</div>';
+
+    return `
+      ${table}
+      <div class="os-form" style="margin-top:14px;">
+        <div class="field"><label>Modelo</label>
+          <select id="maq-modelo">${MODELOS.map(m=>`<option value="${m.id}">${m.label}</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Data de entrega</label><input type="date" id="maq-entrega"></div>
+        <button class="btn-navy" id="maq-add" type="button">+ Adicionar maquininha manual</button>
+      </div>
+    `;
+  }
+
+  // ---- histórico de OS importadas da TEFTI ----
+  function teftiOSTableHtml(c){
+    const list = (c.ordensServicoTefti||[]).slice().sort((a,b)=> (b.dataAbertura||'').localeCompare(a.dataAbertura||''));
+    if(!list.length) return '<div class="no-os">Nenhuma OS importada da TEFTI para este cliente ainda.</div>';
+    const rows = list.map(os=>`<tr>
+      <td style="font-family:var(--font-mono);">${escapeHtml(os.numeroOS)}</td>
+      <td>${escapeHtml(os.servico)}</td>
+      <td>${escapeHtml(os.statusOS)}</td>
+      <td>${escapeHtml(os.statusOPL)||'-'}</td>
+      <td>${fmtDate(os.dataAbertura)}</td>
+      <td>${fmtDate(os.dataFechamento)}</td>
+      <td>${escapeHtml(os.rastreio)||'-'}</td>
+      <td>${escapeHtml(os.criadoPor)||'-'}</td>
+    </tr>`).join('');
+    return `<table class="import-details" style="margin-top:0;">
+      <thead><tr><th>OS</th><th>Serviço</th><th>Status</th><th>Status OPL</th><th>Abertura</th><th>Fechamento</th><th>Rastreio</th><th>Criado por</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  // ---- histórico de manutenção (subconjunto das OS TEFTI) ----
+  function manutencaoTableHtml(c){
+    const list = (c.ordensServicoTefti||[]).filter(os=>os.tipo==='manutencao').slice().sort((a,b)=> (b.dataAbertura||'').localeCompare(a.dataAbertura||''));
+    if(!list.length) return '<div class="no-os">Nenhuma manutenção registrada para este cliente.</div>';
+    const rows = list.map(os=>`<tr>
+      <td style="font-family:var(--font-mono);">${escapeHtml(os.numeroOS)}</td>
+      <td>${escapeHtml(os.statusOS)}</td>
+      <td>${escapeHtml(os.statusOPL)||'-'}</td>
+      <td>${fmtDate(os.dataAbertura)}</td>
+      <td>${fmtDate(os.dataFechamento)}</td>
+      <td>${modeloInfo(os.modelo).label||os.modelo||'-'}</td>
+    </tr>`).join('');
+    return `<table class="import-details" style="margin-top:0;">
+      <thead><tr><th>OS</th><th>Status</th><th>Status OPL</th><th>Abertura</th><th>Fechamento</th><th>Modelo</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  function osCardHtml(os){
+    const statusClass = 'os-status-'+os.status;
+    const statusLabel = OS_STATUS_LABEL[os.status] || os.status;
+    let meta = `Tipo: ${OS_TIPOS[os.tipo]||os.tipo}<br>Defeito: ${escapeHtml(os.defeito)}<br>Aberta em: ${fmtDate(os.dataAbertura)}`;
+    let actions = '';
+    if(os.tipo==='manutencao'){
+      if(os.status==='aberta'){
+        actions = `<button data-os-action="finalizar-manutencao" data-os-id="${os.id}" type="button">Finalizar manutenção</button>`;
+      }else if(os.status==='finalizada'){
+        meta += `<br>Manutenção finalizada em: ${fmtDate(os.dataFinalizacaoManutencao)}`;
+      }
+    }else{ // correios
+      if(os.status==='aberta'){
+        actions = `<button data-os-action="confirmar-entrega" data-os-id="${os.id}" type="button">Confirmar entrega do novo terminal</button>`;
+      }else if(os.status==='entrega_confirmada'){
+        meta += `<br>Entrega confirmada em: ${fmtDate(os.dataEntregaConfirmada)}`;
+        actions = `<button data-os-action="abrir-retirada" data-os-id="${os.id}" type="button">Abrir OS de retirada do terminal defeituoso</button>`;
+      }else if(os.status==='retirada_aberta'){
+        meta += `<br>Entrega confirmada em: ${fmtDate(os.dataEntregaConfirmada)}<br>OS de retirada: ${escapeHtml(os.numeroRetirada)}`;
+        actions = `<button data-os-action="finalizar-retirada" data-os-id="${os.id}" type="button">Finalizar retirada</button>`;
+      }else if(os.status==='finalizada'){
+        meta += `<br>Entrega confirmada em: ${fmtDate(os.dataEntregaConfirmada)}<br>OS de retirada: ${escapeHtml(os.numeroRetirada)}<br>Retirada finalizada em: ${fmtDate(os.dataFinalizacaoRetirada)}`;
+      }
+    }
+    return `
+      <div class="os-card">
+        <div class="os-card-head">
+          <span class="os-num">OS ${escapeHtml(os.numero)}</span>
+          <span class="os-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <div class="os-meta">${meta}</div>
+        <div class="os-actions">${actions}</div>
+      </div>
+    `;
+  }
+
+  // ---------- import ----------
+  document.getElementById('btn-import').addEventListener('click', ()=>{
+    const fileInput = document.getElementById('file-import');
+    const file = fileInput.files[0];
+    if(!file){ renderImportSummary(null, 'Selecione um arquivo antes de importar.'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const data = new Uint8Array(ev.target.result);
+        const wb = XLSX.read(data, {type:'array', cellDates:true});
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {defval:''});
+        processImport(rows);
+      }catch(err){
+        renderImportSummary(null, 'Não foi possível ler o arquivo. Confirme se é o export da Dock (.xlsx/.csv).');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  document.getElementById('btn-import-estabelecimento').addEventListener('click', ()=>{
+    const fileInput = document.getElementById('file-import-estabelecimento');
+    const file = fileInput.files[0];
+    if(!file){ renderEstabelecimentoImportSummary(null, 'Selecione um arquivo antes de importar.'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const data = new Uint8Array(ev.target.result);
+        const wb = XLSX.read(data, {type:'array', cellDates:true});
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {defval:''});
+        processEstabelecimentoImport(rows);
+      }catch(err){
+        renderEstabelecimentoImportSummary(null, 'Não foi possível ler o arquivo. Confirme o layout de exportação de Estabelecimentos.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // ---------- import: cadastro de Estabelecimento (telefone, e-mail, cidade, UF, tabela de preços) ----------
+  function processEstabelecimentoImport(rows){
+    const errors = []; // {linha, motivo}
+    const totalRows = rows.length;
+    let processedRows = 0;
+    let createdClients = [];
+    let updatedClients = [];
+
+    rows.forEach((row, i)=>{
+      const map = {};
+      Object.keys(row).forEach(k=> map[normKey(k)] = row[k]);
+
+      const rawCnpj = normalizeCnpj(map['cnpj-cpf'] !== undefined ? map['cnpj-cpf'] : (map['cnpj'] !== undefined ? map['cnpj'] : map['cnpj do estabelecimento']));
+      if(!rawCnpj){ errors.push({linha:i+2, motivo:'CNPJ-CPF ausente ou inválido'}); return; }
+
+      const razaoSocial = String(map['razao social'] || map['nome fantasia'] || '').trim();
+      const telefone = String(map['telefone'] || '').trim();
+      const email = String(map['e-mail'] !== undefined ? map['e-mail'] : (map['email']||'')).trim();
+      const cidade = String(map['cidade'] || '').trim();
+      const uf = String(map['estado'] !== undefined ? map['estado'] : (map['uf']||'')).trim().toUpperCase().slice(0,2);
+      const tabelaPrecos = String(map['tabela de precos'] || '').trim();
+
+      let client = clients.find(c=> normalizeCnpj(c.cnpj) === rawCnpj);
+      if(client){
+        if(telefone) client.telefone = telefone;
+        if(email) client.email = email;
+        if(cidade) client.cidade = cidade;
+        if(uf) client.uf = uf;
+        if(tabelaPrecos) client.tabelaPrecos = tabelaPrecos;
+        aplicarRazaoSocial(client, razaoSocial, 'estabelecimento');
+        updatedClients.push(client);
+      }else{
+        client = {
+          id: uid(),
+          razaoSocial: razaoSocial || ('CNPJ ' + rawCnpj),
+          razaoSocialFonte: razaoSocial ? 'estabelecimento' : '',
+          cnpj: rawCnpj,
+          marca: '',
+          dataEntrega: '', dataRetirada: '', obs: '',
+          terminais: [], maquininhas: [], bloqueio: {},
+          negociacao: {tipo:'padrao', valorMinimoNegociado:0, observacao:''},
+          volumeMesReferencia: null, historicoVolumes: [], ultimaTransacao: null,
+          ordensServico: [], ordensServicoTefti: [],
+          telefone, email, cidade, uf, tabelaPrecos
+        };
+        clients.push(client);
+        createdClients.push(client);
+      }
+      processedRows++;
+    });
+
+    saveClients();
+    render();
+    renderEstabelecimentoImportSummary({
+      totalRows, processedRows, errors,
+      updatedCount: updatedClients.length, createdCount: createdClients.length,
+      createdClients, updatedClients
+    }, null);
+  }
+
+  function renderEstabelecimentoImportSummary(result, errorMsg){
+    const el = document.getElementById('import-summary-estabelecimento');
+    if(errorMsg){
+      el.className = 'import-summary err';
+      el.innerHTML = errorMsg;
+      return;
+    }
+    el.className = 'import-summary';
+    let html = `Importação de Estabelecimento concluída: <strong>${result.totalRows}</strong> linhas lidas — <strong>${result.processedRows}</strong> processadas, <strong>${result.errors.length}</strong> com erro.<br>`;
+    html += `<strong>${result.createdCount}</strong> cliente(s) novo(s) criado(s) (sinalizado(s) como cadastro incompleto até receberem maquininhas/transações), <strong>${result.updatedCount}</strong> cliente(s) já cadastrado(s) atualizado(s) pelo CNPJ.`;
+    html += `<div><button class="btn-details" id="btn-import-details-estabelecimento" type="button">Ver detalhes</button></div>`;
+    html += `<div class="import-details" id="import-details-estabelecimento-box" style="display:none;"></div>`;
+    el.innerHTML = html;
+
+    document.getElementById('btn-import-details-estabelecimento').addEventListener('click', ()=>{
+      const box = document.getElementById('import-details-estabelecimento-box');
+      if(box.style.display === 'none'){
+        let detHtml = '';
+        if(result.createdClients.length){
+          detHtml += '<strong>Clientes novos:</strong><table><thead><tr><th>Razão Social</th><th>CNPJ</th><th>Cidade/UF</th></tr></thead><tbody>';
+          detHtml += result.createdClients.map(c=>`<tr><td>${escapeHtml(c.razaoSocial)}</td><td>${escapeHtml(c.cnpj)}</td><td>${escapeHtml(c.cidade)}${c.uf?'/'+escapeHtml(c.uf):''}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(result.updatedClients.length){
+          detHtml += '<strong>Clientes atualizados:</strong><table><thead><tr><th>Razão Social</th><th>CNPJ</th><th>Cidade/UF</th></tr></thead><tbody>';
+          detHtml += result.updatedClients.map(c=>`<tr><td>${escapeHtml(c.razaoSocial)}</td><td>${escapeHtml(c.cnpj)}</td><td>${escapeHtml(c.cidade)}${c.uf?'/'+escapeHtml(c.uf):''}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(result.errors.length){
+          detHtml += '<strong>Erros:</strong><table><thead><tr><th>Linha</th><th>Motivo</th></tr></thead><tbody>';
+          detHtml += result.errors.slice(0,50).map(e=>`<tr><td>${e.linha}</td><td>${escapeHtml(e.motivo)}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(!detHtml) detHtml = '<span class="no-os">Nada a detalhar.</span>';
+        box.innerHTML = detHtml;
+        box.style.display = 'block';
+        document.getElementById('btn-import-details-estabelecimento').textContent = 'Ocultar detalhes';
+      }else{
+        box.style.display = 'none';
+        document.getElementById('btn-import-details-estabelecimento').textContent = 'Ver detalhes';
+      }
+    });
+  }
+
+  function processImport(rows){
+    const grouped = {}; // cnpjDigits -> {nome, marca, dataEntregaTerminal, months:{mesKey:valor}, last:Date}
+    const errors = []; // {linha, motivo}
+    let processedRows = 0; // linhas "Aprovado" válidas usadas no cálculo
+    let naoAprovadas = 0;  // linhas com outro status (não é erro, só não entra no cálculo)
+    const totalRows = rows.length;
+
+    rows.forEach((row, i)=>{
+      const map = {};
+      Object.keys(row).forEach(k=> map[normKey(k)] = row[k]);
+      const status = String(map['status']||'').trim().toLowerCase();
+      if(status !== 'aprovado'){ naoAprovadas++; return; }
+
+      const rawCnpj = normalizeCnpj(map['cnpj do estabelecimento'] !== undefined ? map['cnpj do estabelecimento'] : map['cnpj']);
+      if(!rawCnpj){ errors.push({linha:i+2, motivo:'CNPJ do estabelecimento ausente ou inválido'}); return; }
+
+      const txDate = parseFlexibleDate(map['data']);
+      if(!txDate){ errors.push({linha:i+2, motivo:'Campo "Data" ilegível'}); return; }
+
+      const nome = String(map['nome do estabelecimento'] !== undefined ? map['nome do estabelecimento'] : (map['nome']||'')).trim();
+      const valor = parseFloat(map['valor']) || 0;
+      const marca = normalizeMarca(map['marca']);
+      const dataEntregaCell = parseFlexibleDate(map['data de entrega']);
+      const mesKey = dateToMesKey(txDate);
+
+      if(!grouped[rawCnpj]) grouped[rawCnpj] = {nome, marca:'', dataEntregaTerminal:null, months:{}, last:txDate};
+      grouped[rawCnpj].months[mesKey] = (grouped[rawCnpj].months[mesKey]||0) + valor;
+      if(txDate > grouped[rawCnpj].last) grouped[rawCnpj].last = txDate;
+      if(nome) grouped[rawCnpj].nome = nome;
+      if(marca) grouped[rawCnpj].marca = marca;
+      if(dataEntregaCell && (!grouped[rawCnpj].dataEntregaTerminal || dataEntregaCell < grouped[rawCnpj].dataEntregaTerminal)){
+        grouped[rawCnpj].dataEntregaTerminal = dataEntregaCell;
+      }
+      processedRows++;
+    });
+
+    const cnpjKeys = Object.keys(grouped);
+    if(cnpjKeys.length===0){
+      renderImportSummary(null, 'Nenhuma transação aprovada encontrada nesse arquivo.');
+      return;
+    }
+
+    let updatedCount = 0;
+    let createdClients = [];
+    let updatedClients = [];
+
+    cnpjKeys.forEach(cnpj=>{
+      const g = grouped[cnpj];
+      const mesKeys = Object.keys(g.months).sort();
+      const mesRecente = mesKeys[mesKeys.length-1];
+      const volumeRecente = g.months[mesRecente];
+
+      let client = clients.find(c=> normalizeCnpj(c.cnpj) === cnpj);
+      if(client){
+        mesKeys.forEach(mes=>{
+          if(!client.historicoVolumes) client.historicoVolumes = [];
+          const idx = client.historicoVolumes.findIndex(h=>h.mes===mes);
+          if(idx>=0) client.historicoVolumes[idx].valor = g.months[mes];
+          else client.historicoVolumes.push({mes, valor:g.months[mes]});
+        });
+        client.historicoVolumes.sort((a,b)=> a.mes.localeCompare(b.mes));
+        client.volumeMesReferencia = {mes:mesRecente, valor:volumeRecente};
+        const prevLast = client.ultimaTransacao ? new Date(client.ultimaTransacao) : null;
+        if(!prevLast || g.last > prevLast) client.ultimaTransacao = g.last.toISOString();
+        if(g.marca) client.marca = g.marca;
+        aplicarRazaoSocial(client, g.nome, 'transacoes');
+        updatedCount++;
+        updatedClients.push(client);
+      }else{
+        const newClient = {
+          id: uid(),
+          razaoSocial: g.nome || ('CNPJ ' + cnpj),
+          razaoSocialFonte: g.nome ? 'transacoes' : '',
+          cnpj: cnpj,
+          marca: g.marca || '',
+          dataEntrega: g.dataEntregaTerminal ? dateToISO(g.dataEntregaTerminal) : '',
+          dataRetirada: '',
+          obs: '',
+          terminais: [],
+          maquininhas: [],
+          bloqueio: {},
+          negociacao: {tipo:'padrao', valorMinimoNegociado:0, observacao:''},
+          volumeMesReferencia: {mes:mesRecente, valor:volumeRecente},
+          historicoVolumes: mesKeys.map(mes=>({mes, valor:g.months[mes]})),
+          ultimaTransacao: g.last.toISOString(),
+          ordensServico: [],
+          ordensServicoTefti: [],
+          telefone:'', email:'', cidade:'', uf:'', tabelaPrecos:''
+        };
+        clients.push(newClient);
+        createdClients.push(newClient);
+      }
+    });
+
+    saveClients();
+    render();
+    renderImportSummary({
+      totalRows, processedRows, naoAprovadas, errors,
+      updatedCount, createdCount: createdClients.length, createdClients, updatedClients
+    }, null);
+  }
+
+  function renderImportSummary(result, errorMsg){
+    const el = document.getElementById('import-summary');
+    if(errorMsg){
+      el.className = 'import-summary err';
+      el.innerHTML = errorMsg;
+      importDetails = null;
+      return;
+    }
+    el.className = 'import-summary';
+    importDetails = result;
+    let html = `Importação concluída: <strong>${result.totalRows}</strong> linhas lidas — <strong>${result.processedRows}</strong> transações aprovadas processadas, <strong>${result.naoAprovadas}</strong> ignoradas (outro status), <strong>${result.errors.length}</strong> com erro/inconsistência.<br>`;
+    html += `<strong>${result.createdCount}</strong> cliente(s) novo(s) criado(s), <strong>${result.updatedCount}</strong> cliente(s) já cadastrado(s) atualizado(s).`;
+    if(result.createdCount > 0){
+      html += ` Os novos já vêm com a Data de Entrega do arquivo preenchida quando disponível — falta completar modelo/quantidade de terminal e demais dados.`;
+    }
+    html += `<div><button class="btn-details" id="btn-import-details" type="button">Ver detalhes</button></div>`;
+    html += `<div class="import-details" id="import-details-box" style="display:none;"></div>`;
+    el.innerHTML = html;
+
+    document.getElementById('btn-import-details').addEventListener('click', ()=>{
+      const box = document.getElementById('import-details-box');
+      if(box.style.display === 'none'){
+        let detHtml = '';
+        if(result.createdClients.length){
+          detHtml += '<strong>Clientes novos:</strong><table><thead><tr><th>Razão Social</th><th>CNPJ</th><th>Marca</th><th>Data de Entrega</th></tr></thead><tbody>';
+          detHtml += result.createdClients.map(c=>`<tr><td>${escapeHtml(c.razaoSocial)}</td><td>${escapeHtml(c.cnpj)}</td><td>${c.marca||'-'}</td><td>${fmtDate(c.dataEntrega)}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(result.updatedClients.length){
+          detHtml += '<strong>Clientes atualizados:</strong><table><thead><tr><th>Razão Social</th><th>CNPJ</th><th>Mês de referência</th></tr></thead><tbody>';
+          detHtml += result.updatedClients.map(c=>`<tr><td>${escapeHtml(c.razaoSocial)}</td><td>${escapeHtml(c.cnpj)}</td><td>${c.volumeMesReferencia?c.volumeMesReferencia.mes:'-'}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(result.errors.length){
+          detHtml += '<strong>Erros/inconsistências:</strong><table><thead><tr><th>Linha</th><th>Motivo</th></tr></thead><tbody>';
+          detHtml += result.errors.slice(0,50).map(e=>`<tr><td>${e.linha}</td><td>${escapeHtml(e.motivo)}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+          if(result.errors.length>50) detHtml += `<div style="margin-top:4px; color:var(--muted);">+ ${result.errors.length-50} outra(s) linha(s) com erro.</div>`;
+        }
+        if(!detHtml) detHtml = '<span class="no-os">Nada a detalhar.</span>';
+        box.innerHTML = detHtml;
+        box.style.display = 'block';
+        document.getElementById('btn-import-details').textContent = 'Ocultar detalhes';
+      }else{
+        box.style.display = 'none';
+        document.getElementById('btn-import-details').textContent = 'Ver detalhes';
+      }
+    });
+  }
+
+  // ---------- import TEFTI (Ordens de Serviço) ----------
+  // Colunas lidas por posição (0-based), conforme layout do relatório de OS da TEFTI:
+  // A=Código, C=Status, E=Documento(CNPJ), J=Cliente, L=Serviço, N=Data Abertura,
+  // P=Data de Fecham., U=Modelo do Equipamento, W=Nº de Série, AM=Nº de Rastreamento,
+  // AR=Criado por, BE=Status OPL
+  const TEFTI_COL = {
+    numero:0, status:2, documento:4, clienteNome:9, servico:11,
+    dataAbertura:13, dataFechamento:15, modelo:20, numeroSerie:22, rastreio:38, criadoPor:43, statusOPL:56
+  };
+  const TEFTI_CANCEL_STATUS = ['cancelado','cancelado sem visita','erro abertura - informacoes incompletas'];
+
+  function normalizeModeloTefti(raw){
+    const s = normKey(raw);
+    if(s.indexOf('l400')>=0) return 'L400';
+    if(s.indexOf('move5000')>=0 || s.indexOf('move')>=0) return 'MOVE5000';
+    if(s.indexOf('ppc930')>=0) return 'PPC930';
+    if(s.indexOf('s920')>=0) return 'S920';
+    return '';
+  }
+  // Classifica a coluna "Serviço" da TEFTI no tipo de OS que interessa pro cadastro.
+  // "Envio de Bobinas" (suprimento) e outros serviços não listados caem em 'outro' —
+  // ficam só no histórico e não mexem na lista de maquininhas.
+  function classificarServicoTefti(servico){
+    const s = normKey(servico);
+    if(s.indexOf('desinstala')>=0) return 'desinstalacao';
+    if(s.indexOf('troca')>=0) return 'troca';
+    if(s.indexOf('manuten')>=0) return 'manutencao';
+    if(s.indexOf('instala')>=0) return 'instalacao';
+    return 'outro';
+  }
+
+  let importDetailsTefti = null;
+
+  document.getElementById('btn-import-tefti').addEventListener('click', ()=>{
+    const fileInput = document.getElementById('file-import-tefti');
+    const file = fileInput.files[0];
+    if(!file){ renderTeftiImportSummary(null, 'Selecione um arquivo antes de importar.'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const data = new Uint8Array(ev.target.result);
+        const wb = XLSX.read(data, {type:'array', cellDates:true});
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:'', raw:false});
+        processTeftiImport(rows);
+      }catch(err){
+        renderTeftiImportSummary(null, 'Não foi possível ler o arquivo. Confirme se é o relatório de Ordem de Serviço exportado da TEFTI.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  function processTeftiImport(rows){
+    if(!rows || rows.length<2){ renderTeftiImportSummary(null, 'Arquivo vazio ou em formato inesperado.'); return; }
+    const errors = [];
+    let processedRows = 0;
+    const totalRows = rows.length - 1;
+    const grouped = {}; // cnpjDigits -> {nome, osRecords:[]}
+
+    for(let i=1;i<rows.length;i++){
+      const r = rows[i];
+      if(!r || r.length===0 || r.every(cell=>String(cell||'').trim()==='')) continue;
+
+      const numeroOS = String(r[TEFTI_COL.numero]||'').trim();
+      const cnpj = normalizeCnpj(r[TEFTI_COL.documento]);
+      if(!numeroOS || !cnpj){
+        errors.push({linha:i+1, motivo: !numeroOS ? 'Nº da OS (coluna A) ausente' : 'CNPJ (coluna E) ausente ou inválido'});
+        continue;
+      }
+      const statusOS = String(r[TEFTI_COL.status]||'').trim();
+      const servico = String(r[TEFTI_COL.servico]||'').trim();
+      const dataAberturaD = parseFlexibleDate(r[TEFTI_COL.dataAbertura]);
+      const dataFechamentoD = parseFlexibleDate(r[TEFTI_COL.dataFechamento]);
+      const modeloRaw = String(r[TEFTI_COL.modelo]||'').trim();
+      const numeroSerie = String(r[TEFTI_COL.numeroSerie]||'').trim();
+      const rastreio = String(r[TEFTI_COL.rastreio]||'').trim();
+      const criadoPor = String(r[TEFTI_COL.criadoPor]||'').trim();
+      const statusOPL = String(r[TEFTI_COL.statusOPL]||'').trim();
+      const nomeCliente = String(r[TEFTI_COL.clienteNome]||'').trim();
+
+      if(!grouped[cnpj]) grouped[cnpj] = {nome:nomeCliente, osRecords:[]};
+      if(nomeCliente) grouped[cnpj].nome = nomeCliente;
+      grouped[cnpj].osRecords.push({
+        numeroOS, statusOS, servico,
+        tipo: classificarServicoTefti(servico),
+        dataAbertura: dataAberturaD ? dateToISO(dataAberturaD) : '',
+        dataFechamento: dataFechamentoD ? dateToISO(dataFechamentoD) : '',
+        modelo: normalizeModeloTefti(modeloRaw),
+        modeloRaw, numeroSerie, rastreio, criadoPor, statusOPL
+      });
+      processedRows++;
+    }
+
+    const cnpjKeys = Object.keys(grouped);
+    if(cnpjKeys.length===0){
+      renderTeftiImportSummary(null, 'Nenhuma OS válida encontrada nesse arquivo.');
+      return;
+    }
+
+    let createdClients = [];
+    let updatedClients = [];
+
+    cnpjKeys.forEach(cnpj=>{
+      const g = grouped[cnpj];
+      let client = clients.find(c=> normalizeCnpj(c.cnpj) === cnpj);
+      let isNew = false;
+      if(!client){
+        client = {
+          id: uid(), razaoSocial: g.nome || ('CNPJ '+cnpj), razaoSocialFonte: g.nome ? 'tefti' : '',
+          cnpj: cnpj, marca:'',
+          dataEntrega:'', dataRetirada:'', obs:'', terminais:[], bloqueio:{},
+          volumeMesReferencia:null, historicoVolumes:[], ultimaTransacao:null,
+          ordensServico:[], ordensServicoTefti:[], maquininhas:[],
+          negociacao:{tipo:'padrao', valorMinimoNegociado:0, observacao:''},
+          telefone:'', email:'', cidade:'', uf:'', tabelaPrecos:''
+        };
+        clients.push(client);
+        isNew = true;
+      } else {
+        aplicarRazaoSocial(client, g.nome, 'tefti');
+      }
+      if(!client.ordensServicoTefti) client.ordensServicoTefti = [];
+      if(!client.maquininhas) client.maquininhas = [];
+
+      // processa em ordem cronológica de abertura pra instalar antes de desinstalar
+      g.osRecords.sort((a,b)=> (a.dataAbertura||'').localeCompare(b.dataAbertura||''));
+
+      g.osRecords.forEach(rec=>{
+        const idx = client.ordensServicoTefti.findIndex(o=>o.numeroOS===rec.numeroOS);
+        const existenteAntes = idx>=0 ? client.ordensServicoTefti[idx] : null;
+        // "efeitoAplicado" marca se essa OS já teve seu efeito (criar/dar baixa em maquininha)
+        // decidido em uma importação anterior — evita reprocessar e "roubar" outra maquininha
+        // ativa numa reimportação, e também evita ficar tentando pra sempre uma OS de
+        // desinstalação que nunca vai achar um alvo (instalada antes da janela do relatório).
+        rec.efeitoAplicado = existenteAntes ? !!existenteAntes.efeitoAplicado : false;
+        if(idx>=0) client.ordensServicoTefti[idx] = rec; else client.ordensServicoTefti.push(rec);
+
+        if(rec.efeitoAplicado) return; // já decidido antes, não mexe de novo
+
+        const cancelada = TEFTI_CANCEL_STATUS.indexOf(normKey(rec.statusOS)) >= 0;
+        const finalizadaComData = !!rec.dataFechamento && !cancelada;
+
+        if(!finalizadaComData){
+          // ainda em aberto (ou cancelada) — deixa efeitoAplicado=false pra reavaliar
+          // numa próxima importação, quando/se for finalizada. Cancelada nunca gera efeito.
+          if(cancelada) rec.efeitoAplicado = true;
+          return;
+        }
+
+        if(rec.tipo==='instalacao'){
+          const jaExiste = client.maquininhas.find(m=>m.osInstalacao===rec.numeroOS);
+          if(!jaExiste){
+            client.maquininhas.push({
+              id: uid(), modelo: rec.modelo || '', dataEntrega: rec.dataFechamento, dataRetirada:'',
+              status:'ativa', osInstalacao:rec.numeroOS, osDesinstalacao:'', rastreio:rec.rastreio,
+              numeroSerie: rec.numeroSerie||'', valorCobrancaOverride:null, sempreCobra:false, origem:'tefti'
+            });
+            if(!client.dataEntrega || rec.dataFechamento < client.dataEntrega) client.dataEntrega = rec.dataFechamento;
+          }
+        } else if(rec.tipo==='desinstalacao'){
+          // procura uma maquininha ativa do mesmo modelo pra dar baixa; se não achar do
+          // mesmo modelo (ou o modelo não veio preenchido na OS), pega qualquer ativa.
+          let alvo = client.maquininhas.find(m=> m.status==='ativa' && rec.modelo && m.modelo===rec.modelo);
+          if(!alvo) alvo = client.maquininhas.find(m=> m.status==='ativa');
+          if(alvo){
+            alvo.status = 'retirada';
+            alvo.dataRetirada = rec.dataFechamento;
+            alvo.osDesinstalacao = rec.numeroOS;
+          } else {
+            errors.push({linha:'-', motivo:'OS '+rec.numeroOS+' (desinstalação, CNPJ '+cnpj+') não encontrou maquininha ativa correspondente — provavelmente instalada antes do início deste relatório. Revisar manualmente no Perfil do cliente.'});
+          }
+          if(!client.dataRetirada || rec.dataFechamento > client.dataRetirada) client.dataRetirada = rec.dataFechamento;
+        }
+        // manutenção, troca de tecnologia e "outro" (ex: envio de bobinas) ficam só no
+        // histórico (ordensServicoTefti) e não alteram automaticamente a lista de maquininhas.
+        rec.efeitoAplicado = true;
+      });
+
+      if(isNew) createdClients.push(client); else updatedClients.push(client);
+    });
+
+    saveClients();
+    render();
+    renderTeftiImportSummary({
+      totalRows, processedRows, errors,
+      createdCount: createdClients.length, updatedCount: updatedClients.length,
+      createdClients, updatedClients
+    }, null);
+  }
+
+  function renderTeftiImportSummary(result, errorMsg){
+    const el = document.getElementById('import-summary-tefti');
+    if(errorMsg){
+      el.className = 'import-summary err';
+      el.innerHTML = errorMsg;
+      importDetailsTefti = null;
+      return;
+    }
+    el.className = 'import-summary';
+    importDetailsTefti = result;
+    let html = `Importação TEFTI concluída: <strong>${result.totalRows}</strong> linhas lidas — <strong>${result.processedRows}</strong> OS processadas, <strong>${result.errors.length}</strong> com erro/observação.<br>`;
+    html += `<strong>${result.createdCount}</strong> cliente(s) novo(s) criado(s) a partir do arquivo, <strong>${result.updatedCount}</strong> cliente(s) já cadastrado(s) atualizado(s).`;
+    html += ` OS de Manutenção, Troca de Tecnologia e Envio de Bobinas entram no histórico do cliente, mas não alteram a lista de maquininhas automaticamente.`;
+    html += `<div><button class="btn-details" id="btn-import-details-tefti" type="button">Ver detalhes</button></div>`;
+    html += `<div class="import-details" id="import-details-tefti-box" style="display:none;"></div>`;
+    el.innerHTML = html;
+
+    document.getElementById('btn-import-details-tefti').addEventListener('click', ()=>{
+      const box = document.getElementById('import-details-tefti-box');
+      if(box.style.display === 'none'){
+        let detHtml = '';
+        if(result.createdClients.length){
+          detHtml += '<strong>Clientes novos:</strong><table><thead><tr><th>Razão Social</th><th>CNPJ</th><th>Maquininhas ativas</th></tr></thead><tbody>';
+          detHtml += result.createdClients.map(c=>`<tr><td>${escapeHtml(c.razaoSocial)}</td><td>${escapeHtml(c.cnpj)}</td><td>${maquininhasAtivas(c).length}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(result.updatedClients.length){
+          detHtml += '<strong>Clientes atualizados:</strong><table><thead><tr><th>Razão Social</th><th>CNPJ</th><th>Maquininhas ativas</th></tr></thead><tbody>';
+          detHtml += result.updatedClients.map(c=>`<tr><td>${escapeHtml(c.razaoSocial)}</td><td>${escapeHtml(c.cnpj)}</td><td>${maquininhasAtivas(c).length}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+        }
+        if(result.errors.length){
+          detHtml += '<strong>Erros/observações:</strong><table><thead><tr><th>Linha</th><th>Motivo</th></tr></thead><tbody>';
+          detHtml += result.errors.slice(0,50).map(e=>`<tr><td>${e.linha}</td><td>${escapeHtml(e.motivo)}</td></tr>`).join('');
+          detHtml += '</tbody></table>';
+          if(result.errors.length>50) detHtml += `<div style="margin-top:4px; color:var(--muted);">+ ${result.errors.length-50} outra(s) linha(s) com erro/observação.</div>`;
+        }
+        if(!detHtml) detHtml = '<span class="no-os">Nada a detalhar.</span>';
+        box.innerHTML = detHtml;
+        box.style.display = 'block';
+        document.getElementById('btn-import-details-tefti').textContent = 'Ocultar detalhes';
+      }else{
+        box.style.display = 'none';
+        document.getElementById('btn-import-details-tefti').textContent = 'Ver detalhes';
+      }
+    });
+  }
+
+  // ---------- backup ----------
+  document.getElementById('btn-backup').addEventListener('click', ()=>{
+    const json = JSON.stringify(clients, null, 2);
+    const blob = new Blob([json], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'backup_gestao_maquininhas.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showStatus('Backup baixado. Guarde este arquivo em local seguro.');
+  });
+  document.getElementById('btn-restore').addEventListener('click', ()=>{
+    document.getElementById('file-restore').click();
+  });
+  document.getElementById('file-restore').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const imported = JSON.parse(ev.target.result);
+        if(!Array.isArray(imported)) throw new Error('formato inválido');
+        const merge = confirm('Clique OK para MESCLAR este backup com os dados atuais, ou Cancelar para SUBSTITUIR tudo pelos dados do backup.');
+        if(merge){
+          const existingIds = new Set(clients.map(c=>c.id));
+          imported.forEach(c=>{ if(!existingIds.has(c.id)) clients.push(c); });
+        }else{
+          clients = imported;
+        }
+        saveClients();
+        render();
+        showStatus('Backup restaurado com sucesso.');
+      }catch(err){
+        showStatus('Arquivo de backup inválido.', true);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // ---------- configuração de modelos de terminal ----------
+  function renderModelosConfig(){
+    const el = document.getElementById('modelos-config-rows');
+    el.innerHTML = MODELOS.map(m=>`
+      <div style="display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:14px; align-items:end; margin-bottom:12px;">
+        <div class="field"><label>Modelo</label><input type="text" value="${escapeHtml(m.label)}" disabled></div>
+        <div class="field"><label>Mensalidade padrão (R$)</label><input type="text" inputmode="numeric" data-modelo-id="${m.id}" data-modelo-campo="mensalidade" value="${m.mensalidade}"></div>
+        <div class="field"><label>Mínimo mensal p/ isenção (R$)</label><input type="text" inputmode="numeric" data-modelo-id="${m.id}" data-modelo-campo="minimo" value="${m.minimo}"></div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('btn-save-modelos').addEventListener('click', ()=>{
+    const inputs = document.querySelectorAll('#modelos-config-rows input[data-modelo-id]');
+    let erro = null;
+    const novos = MODELOS.map(m=>({...m}));
+    inputs.forEach(inp=>{
+      const id = inp.dataset.modeloId;
+      const campo = inp.dataset.modeloCampo;
+      const val = parseFloat(String(inp.value).replace(/[^\d.,]/g,'').replace(',','.'));
+      if(isNaN(val) || val<0){ erro = 'Valor inválido em '+id+' / '+campo; return; }
+      const alvo = novos.find(m=>m.id===id);
+      if(alvo) alvo[campo] = val;
+    });
+    if(erro){
+      document.getElementById('modelos-config-status').textContent = erro;
+      document.getElementById('modelos-config-status').style.color = '#B33B2F';
+      return;
+    }
+    MODELOS = novos;
+    saveModelosConfig();
+    renderModelosConfig();
+    render();
+    if(profileClientId) renderProfile();
+    const status = document.getElementById('modelos-config-status');
+    status.textContent = 'Configuração salva — cálculos de cobrança já atualizados.';
+    status.style.color = 'var(--accent)';
+  });
+
+  // ---------- cartões colapsáveis de importação ----------
+  document.querySelectorAll('[data-collapse-toggle]').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const bodyId = head.dataset.collapseToggle;
+      const body = document.getElementById(bodyId);
+      const arrow = head.querySelector('.card-toggle-arrow');
+      const open = body.classList.toggle('open');
+      if(arrow) arrow.classList.toggle('open', open);
+    });
+  });
+
+  // ---------- exportação customizada ----------
+  const EXPORT_OPTIONS = [
+    {key:'todos', label:'Todos os clientes', sub:'Exporta a base completa, respeitando a busca/filtro atual da tela.'},
+    {key:'cobrar', label:'Fila de cobrança', sub:'Somente clientes com valor a cobrar no mês de referência.'},
+    {key:'isento', label:'Isentos', sub:'Clientes isentos de mensalidade no mês de referência.'},
+    {key:'incompleto', label:'Cadastro incompleto', sub:'Falta razão social, CNPJ ou dados de contato (telefone/e-mail/cidade/UF).'},
+    {key:'sem-maquininha', label:'Sem maquininha ativa', sub:'Clientes sem nenhuma maquininha ativa cadastrada (normalmente já tiveram os terminais retirados).'},
+    {key:'inativo', label:'Inatividade (3+ meses)', sub:'Sem transações há 3 meses ou mais — relatório já traz a avaliação de retirada.'},
+    {key:'marca-oncoprod', label:'Marca: Oncoprod', sub:''},
+    {key:'marca-farma', label:'Marca: Farma', sub:''},
+    {key:'os-aberta', label:'OS em aberto', sub:'Clientes com ordem de serviço manual ou da TEFTI ainda em aberto.'}
+  ];
+
+  function renderExportOptions(){
+    const el = document.getElementById('export-options');
+    el.innerHTML = EXPORT_OPTIONS.map((o,idx)=>`
+      <label class="export-option">
+        <input type="radio" name="export-opt" value="${o.key}" ${idx===0?'checked':''}>
+        <div>
+          <div class="export-option-label">${o.label}</div>
+          ${o.sub ? `<div class="export-option-sub">${o.sub}</div>` : ''}
+        </div>
+      </label>
+    `).join('');
+  }
+
+  function clientMatchesExportFilter(c, key){
+    const status = billingStatus(c);
+    const inativo = inatividadeFlag(c);
+    if(key==='todos') return true;
+    if(key==='cobrar') return status.tag==='cobrar';
+    if(key==='isento') return status.tag==='isento';
+    if(key==='incompleto') return cadastroIncompletoFlag(c);
+    if(key==='sem-maquininha') return status.tag==='semmaquininha';
+    if(key==='inativo') return inativo;
+    if(key==='marca-oncoprod') return c.marca==='Oncoprod';
+    if(key==='marca-farma') return c.marca==='Farma';
+    if(key==='os-aberta') return (c.ordensServico||[]).some(os=>os.status!=='finalizada') || teftiOSAbertas(c)>0;
+    return true;
+  }
+
+  function lastNMonthKeys(n){
+    const arr = [];
+    const now = new Date();
+    for(let i=n-1;i>=0;i--){
+      const dt = new Date(now.getFullYear(), now.getMonth()-i, 1);
+      arr.push(dateToMesKey(dt));
+    }
+    return arr;
+  }
+
+  function openExportModal(){
+    renderExportOptions();
+    document.getElementById('export-modal').classList.add('open');
+  }
+  function closeExportModal(){
+    document.getElementById('export-modal').classList.remove('open');
+  }
+  document.getElementById('btn-export').addEventListener('click', openExportModal);
+  document.getElementById('export-close').addEventListener('click', closeExportModal);
+  document.getElementById('export-modal').addEventListener('click', e=>{
+    if(e.target.id==='export-modal') closeExportModal();
+  });
+
+  document.getElementById('export-confirm').addEventListener('click', ()=>{
+    const checked = document.querySelector('input[name="export-opt"]:checked');
+    const key = checked ? checked.value : 'todos';
+    const search = (document.getElementById('search').value || '').toLowerCase();
+
+    let base = clients.filter(c=> clientMatchesExportFilter(c, key));
+    if(key==='todos' && search){
+      base = base.filter(c=> c.razaoSocial.toLowerCase().includes(search) || (c.cnpj||'').toLowerCase().includes(search));
+    }
+
+    if(base.length===0){
+      showStatus('Nenhum cliente encontrado para esse filtro de exportação.', true);
+      return;
+    }
+
+    const meses = lastNMonthKeys(4); // 3 meses anteriores + mês atual
+    const header = [
+      'Razão Social','CNPJ','Marca','Telefone','E-mail','Cidade','UF',
+      'Status Mensalidade','Valor a Cobrar','Cadastro Incompleto',
+      'Qtd Maquininhas Ativas','Modelos das Maquininhas',
+      'Meses sem Transação','Avaliação de Retirada',
+      ...meses.map(m=>'Volume '+m),
+      'Volume Acumulado'
+    ];
+    const aoa = [header];
+
+    base.forEach(c=>{
+      const status = billingStatus(c);
+      const mesesSemTx = mesesSemTransacaoCount(c);
+      const avaliarRetirada = (mesesSemTx!==null && mesesSemTx>=3) ? 'Avaliar retirada' : '-';
+      const volumesMeses = meses.map(mk=>{
+        const h = (c.historicoVolumes||[]).find(x=>x.mes===mk);
+        return h ? h.valor : 0;
+      });
+      // Agrupa as maquininhas ATIVAS por modelo pra montar a coluna descritiva:
+      // ex. "MOVE5000 x2 + TEF PPC930 x1". Assim, num só campo, dá pra ver quantos
+      // terminais o cliente tem e de quais modelos, sem precisar abrir o perfil.
+      const ativas = maquininhasAtivas(c);
+      const gruposAtivos = {};
+      ativas.forEach(m=>{ gruposAtivos[m.modelo] = (gruposAtivos[m.modelo]||0) + 1; });
+      const modelosStr = Object.keys(gruposAtivos)
+        .map(mod => (modeloInfo(mod).label || mod) + ' x' + gruposAtivos[mod])
+        .join(' + ');
+      aoa.push([
+        c.razaoSocial, c.cnpj||'', c.marca||'', c.telefone||'', c.email||'', c.cidade||'', c.uf||'',
+        status.label, status.cobrar===null ? '' : status.cobrar,
+        cadastroIncompletoFlag(c) ? 'Sim' : 'Não',
+        ativas.length, modelosStr || '-',
+        mesesSemTx===null ? '-' : mesesSemTx,
+        avaliarRetirada,
+        ...volumesMeses,
+        volumeAcumulado(c)
+      ]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = header.map((h,i)=>{
+      if(i===0) return {wch:32};                             // Razão Social
+      if(i===1) return {wch:18};                             // CNPJ
+      if(h==='Modelos das Maquininhas') return {wch:28};     // lista de modelos + quantidades
+      if(h==='Qtd Maquininhas Ativas') return {wch:12};
+      return {wch:16};
+    });
+    const wb = XLSX.utils.book_new();
+    const optLabel = (EXPORT_OPTIONS.find(o=>o.key===key)||{}).label || 'relatorio';
+    XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
+    const fname = 'relatorio_' + optLabel.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_') + '_' + todayISO() + '.xlsx';
+    XLSX.writeFile(wb, fname);
+    closeExportModal();
+    showStatus('Relatório exportado: ' + fname);
+  });
+
+  resetForm();
+  renderModelosConfig();
+  loadClients();
+})();
+</script>
+</body>
+</html>
