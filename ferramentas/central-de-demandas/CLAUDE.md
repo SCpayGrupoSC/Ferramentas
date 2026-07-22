@@ -15,6 +15,14 @@ Painel pessoal de demandas no estilo **Kanban** ("Central de Demandas"), para or
 - **Notificações** (sino) de vencimentos próximos (≤ 2 dias) e atrasados.
 - **Dashboard** com estatísticas: total de cards, atrasados, vencendo, concluídos, bloqueados, progresso de checklist, cards por coluna e por responsável.
 - **Relatório** exportável em HTML (download local) com o resumo do quadro ativo.
+- **Tema claro/escuro** — botão no cabeçalho (☀/🌙) alterna o tema. Na primeira visita respeita a preferência do sistema (`prefers-color-scheme`) e a escolha do usuário é persistida em `localStorage` (`THEME_KEY = 'kanban-theme'`).
+
+## Tema (dark mode)
+
+- Todo o visual é controlado por variáveis CSS em `:root`. O tema escuro é um bloco `:root[data-theme="dark"]{…}` que sobrescreve essas variáveis, então componentes novos que usem as variáveis já herdam o suporte automaticamente.
+- `color-scheme:dark` no tema escuro deixa controles nativos (date picker, checkboxes, scrollbars) coerentes.
+- Ajustes pontuais de contraste para cores fixas: `.badge.assignee`, `.badge.due-ok` e `.icon-btn.active-mode`.
+- O **relatório exportável** (`generateReport()`) permanece sempre claro por ser um documento voltado a impressão/compartilhamento.
 
 ## Persistência de dados
 
