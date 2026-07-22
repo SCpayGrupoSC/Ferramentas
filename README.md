@@ -25,5 +25,6 @@ Monorepositório de ferramentas internas (calculadoras, validadores, simuladores
 - [`calculadora-spread`](./ferramentas/calculadora-spread) — dashboard de receitas e calculadora de spread MDR/Pix/Antecipação (migrada como está, com correção de XSS aplicada — ver CLAUDE.md local)
 - [`central-de-demandas`](./ferramentas/central-de-demandas) — painel pessoal de demandas no estilo Kanban, com tema claro/escuro (migrada como está — ver CLAUDE.md local)
 - [`gestao-maquininhas`](./ferramentas/gestao-maquininhas) — gestão de maquininhas (terminais POS), clientes, OS, cobrança e relatórios XLSX (migrada como está, XSS auditado — ver CLAUDE.md local)
+- [`crm-farmacias`](./ferramentas/crm-farmacias) — CRM comercial das farmácias do grupo: painel de indicadores, funil de vendas, onboarding e carteira ativa, com identidade visual SCpay aplicada ([manual de uso](./ferramentas/crm-farmacias/MANUAL.md) — ver CLAUDE.md local)
 
 > **Nota:** as duas ferramentas foram migradas para dentro do monorepo como estavam, mas passaram por auditoria de segurança e correção de XSS. Cada uma tem um `CLAUDE.md` local com detalhes das correções aplicadas e pendências para uma refatoração futura (separar em index.html + script.js + adotar banco-theme.css).
