@@ -26,6 +26,30 @@ alteração de estrutura HTML, handlers ou lógica JS:
   são um sistema categórico de data-viz onde o teal já é usado para outros estados; unificá-las
   colapsaria significados distintos.
 
+## 🌙 Modo escuro (dark mode)
+
+Adicionada a **opção de tema claro/escuro** — mudança puramente de aparência, sem alterar HTML,
+handlers ou lógica de negócio.
+
+- **Toggle:** botão flutuante (`#scpay-theme-toggle`) no canto inferior direito, com ícone
+  sol/lua e rótulo `Claro`/`Escuro`. Anexado ao `<html>` (fora da raiz do React) para não ser
+  removido nos re-renders.
+- **Persistência:** chave `crm-darkmode` no `localStorage` (`'light'`/`'dark'`). Na primeira visita
+  segue `prefers-color-scheme`. Um script de init no `<head>` aplica o tema antes da pintura para
+  evitar flash.
+- **Como o tema é aplicado — e por quê `filter`:** o app é React (runtime "dc") e **re-renderiza**
+  substituindo o `<x-dc>`; os estilos são objetos inline serializados pelo navegador como
+  `rgb(r, g, b)` (não hex). Seletores de atributo por cor (`[style*="#fff"]`) **quebrariam** após o
+  primeiro render, e qualquer cor não mapeada ficaria clara no escuro. Por isso o dark mode usa
+  `filter: invert(.92) hue-rotate(180deg)` em `:root[data-theme="dark"] body > div` (a raiz do app):
+  é **robusto a re-render e ao formato do estilo**, e o `hue-rotate` **preserva os matizes** das
+  cores categóricas (badges de status/funil) e da marca — exatamente o requisito de não colapsar
+  significados. O botão fica fora do subárvore filtrada, então não é invertido.
+- **Injeção:** o `<style id="scpay-darkmode">`, o init e o script do botão foram inseridos no
+  **template do bundle** (script `__bundler/template`, linha ~187 do `index.html`). Como esse
+  template é uma **string JSON dentro de um `<script>`**, todas as tags de fechamento são escritas
+  como `<\/...>` para não encerrar o `<script>` externo antes da hora.
+
 ## O que a ferramenta faz
 
 CRM comercial para acompanhamento das farmácias do grupo, com 4 abas:
