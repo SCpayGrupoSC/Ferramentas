@@ -297,7 +297,50 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       transform:none !important;
     }
   }
+
+  /* ---- Botão de tema ---- */
+  .btn-theme{white-space:nowrap;}
+
+  /* ---- Dark mode (opcional) ---- */
+  /* Sobrepõe apenas os tokens de cor: o restante do CSS herda via as variáveis. */
+  [data-theme="dark"]{
+    --ink-navy:#161A2E;       /* topbar/shell e gradiente da marca */
+    --slate:#0F1220;          /* cabeçalho da tabela */
+    --logo-red:#F2706C;       /* vermelho mais legível sobre fundo escuro */
+    --bg-app:#12141C;         /* fundo da página / fundo de inputs (--paper-dim) */
+    --surface-card:#1E2130;   /* cards / --paper */
+    --text-muted:#9CA1B3;     /* texto secundário (--ink-soft) */
+    --text-muted-light:#767B8E;
+    --border:#2C3040;         /* bordas / --line */
+    --ink:#E8EAF2;            /* texto principal (sobrepõe o alias var(--ink-navy)) */
+  }
+  /* Correções de cores fixas que não usam tokens */
+  [data-theme="dark"] .field input:focus,
+  [data-theme="dark"] .date-input:focus{ background:var(--surface-card); }
+  [data-theme="dark"] tbody tr:hover{ background:rgba(255,255,255,.045); }
+  [data-theme="dark"] select.move-select{ background:var(--surface-card); }
+  [data-theme="dark"] .modal input{ background:var(--paper-dim); color:var(--ink); }
+  [data-theme="dark"] .btn-primary{ background:#333A5C; }
+  /* A topbar usa color:var(--paper) (branco no claro); no escuro isso viraria
+     o tom do card. Mantém o texto do cabeçalho claro sobre o shell escuro. */
+  [data-theme="dark"] .topbar{ color:#F3F5FA; }
+  [data-theme="dark"] .table-wrap,
+  [data-theme="dark"] .receipt,
+  [data-theme="dark"] .add-panel{ box-shadow:0 2px 8px rgba(0,0,0,.35); }
 </style>
+<script>
+/* Aplica o tema salvo (ou a preferência do sistema) antes de renderizar,
+   evitando o "flash" de tema claro ao carregar em modo escuro. */
+(function(){
+  try{
+    var t = localStorage.getItem('carteira:tema');
+    if(t !== 'dark' && t !== 'light'){
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  }catch(e){ document.documentElement.setAttribute('data-theme','light'); }
+})();
+</script>
 </head>
 <body>
 <div id="app">
@@ -323,7 +366,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         </div>
         <button class="btn btn-upload" id="btnUpload">⇪ Carregar arquivo de vendas (Dock)</button>
         <input type="file" id="fileInput" accept=".xlsx,.xls">
-        <button class="btn btn-ghost btn-sm push-end" id="btnReset">Limpar minha carteira</button>
+        <button class="btn btn-ghost btn-sm btn-theme push-end" id="btnTheme" type="button" aria-label="Alternar tema claro/escuro" aria-pressed="false" title="Alternar tema claro/escuro"></button>
+        <button class="btn btn-ghost btn-sm" id="btnReset">Limpar minha carteira</button>
       </div>
     </div>
   </div>
@@ -910,6 +954,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
   document.getElementById('modalCancel').onclick = closeModal;
   document.getElementById('modalOverlay').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
+
+  /* ---- Alternância de tema (claro/escuro) ---- */
+  var THEME_KEY = 'carteira:tema';
+  var btnTheme = document.getElementById('btnTheme');
+  function currentTheme(){
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  }
+  function syncThemeBtn(){
+    var dark = currentTheme() === 'dark';
+    btnTheme.textContent = dark ? '☀️ Tema claro' : '🌙 Tema escuro';
+    btnTheme.setAttribute('aria-pressed', dark ? 'true' : 'false');
+  }
+  btnTheme.onclick = function(){
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+    syncThemeBtn();
+  };
+  syncThemeBtn();
 
   /* ============ Init ============ */
   loadState().then(render);
