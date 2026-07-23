@@ -26,6 +26,20 @@
   **Limpar dados** e o identificador do usuário (ex.: *Comercial 1*).
 - **Abas:** `Painel` · `Funil de vendas` · `Onboarding` · `Carteira`. A aba ativa fica em **laranja**.
 - **Área central:** muda conforme a aba selecionada.
+- **Botão de tema (canto inferior direito):** um botão flutuante para alternar entre o modo
+  **claro** e **escuro** (veja a seção abaixo).
+
+---
+
+## 2.1. Modo escuro (dark mode)
+
+- No **canto inferior direito** há um botão flutuante: **🌙 Escuro** (quando você está no modo claro)
+  ou **☀️ Claro** (quando está no modo escuro). Clique nele para alternar o tema.
+- A sua preferência fica **salva no navegador** — ao reabrir a ferramenta, ela volta no mesmo tema.
+- Na **primeira** vez, a ferramenta segue a preferência de tema do seu sistema/navegador (claro ou
+  escuro) até você escolher manualmente.
+- As **cores de status** (verde/âmbar/azul/roxo/vermelho do funil e dos badges) e a marca SCpay
+  continuam reconhecíveis nos dois temas.
 
 ---
 
